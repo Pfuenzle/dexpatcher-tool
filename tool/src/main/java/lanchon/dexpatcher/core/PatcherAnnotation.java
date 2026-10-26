@@ -1,5 +1,5 @@
 /*
- * DexPatcher - Copyright 2015-2020 Rodrigo Balerdi
+ * DexPatcher - Copyright 2015-2026 Pfuenzle
  * (GNU General Public License version 3 or later)
  *
  * DexPatcher is free software: you can redistribute it and/or modify
@@ -11,9 +11,13 @@
 package lanchon.dexpatcher.core;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import lanchon.dexpatcher.core.finder.FinderAnnotationParser;
+import lanchon.dexpatcher.core.finder.FinderQueryException;
+import lanchon.dexpatcher.core.finder.FinderSpec;
 import lanchon.dexpatcher.core.patcher.ActionBasedPatcher;
 import lanchon.dexpatcher.core.util.DexUtils;
 
@@ -57,6 +61,24 @@ public class PatcherAnnotation implements ActionBasedPatcher.ActionContext {
 		Action defaultAction = null;
 		boolean contentOnly = false;
 		boolean recursive = false;
+		FinderSpec finder = null;
+		FinderAnnotationParser finderParser = new FinderAnnotationParser(actionParser.getAnnotationPackage());
+		for (Annotation an : filteredAnnotations) {
+			try {
+				FinderSpec spec = finderParser.parse(an);
+				if (spec != null) {
+					if (finder != null) {
+						throw new PatchException("conflicting finder annotations");
+					}
+					finder = spec;
+				}
+			} catch (FinderQueryException e) {
+				throw new PatchException("invalid finder annotation (" + e.getMessage() + ")");
+			}
+		}
+		for (Iterator<Annotation> it = filteredAnnotations.iterator(); it.hasNext(); ) {
+			if (finderParser.getFinderTypeDescriptor().equals(it.next().getType())) it.remove();
+		}
 		for (AnnotationElement element : annotation.getElements()) {
 			String name = element.getName();
 			EncodedValue value = element.getValue();
@@ -109,7 +131,7 @@ public class PatcherAnnotation implements ActionBasedPatcher.ActionContext {
 		}
 
 		return new PatcherAnnotation(action, target, targetClass, staticConstructorAction, defaultAction,
-				contentOnly, recursive, Collections.unmodifiableSet(filteredAnnotations));
+				contentOnly, recursive, finder, Collections.unmodifiableSet(filteredAnnotations));
 
 	}
 
@@ -128,15 +150,16 @@ public class PatcherAnnotation implements ActionBasedPatcher.ActionContext {
 	private final Action defaultAction;
 	private final boolean contentOnly;
 	private final boolean recursive;
+	private final FinderSpec finder;
 	private final Set<? extends Annotation> filteredAnnotations;
 
 	public PatcherAnnotation(Action action, Set<? extends Annotation> filteredAnnotations) {
-		this(action, null, null, null, null, false, false, filteredAnnotations);
+		this(action, null, null, null, null, false, false, null, filteredAnnotations);
 	}
 
 	public PatcherAnnotation(Action action, String target, String targetClass,
 			Action staticConstructorAction, Action defaultAction, boolean contentOnly,
-			boolean recursive, Set<? extends Annotation> filteredAnnotations) {
+			boolean recursive, FinderSpec finder, Set<? extends Annotation> filteredAnnotations) {
 		if (action == null) throw new AssertionError("Null action");
 		this.action = action;
 		this.target = target;
@@ -145,7 +168,12 @@ public class PatcherAnnotation implements ActionBasedPatcher.ActionContext {
 		this.defaultAction = defaultAction;
 		this.contentOnly = contentOnly;
 		this.recursive = recursive;
+		this.finder = finder;
 		this.filteredAnnotations = filteredAnnotations;
+	}
+
+	public FinderSpec getFinder() {
+		return finder;
 	}
 
 	public Action getAction() {
