@@ -1,5 +1,5 @@
 /*
- * DexPatcher - Copyright 2015-2026 Pfuenzle
+ * DexPatcher - Copyright 2015-2020 Rodrigo Balerdi, 2026 Pfuenzle
  * (GNU General Public License version 3 or later)
  *
  * DexPatcher is free software: you can redistribute it and/or modify
