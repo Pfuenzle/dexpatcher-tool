@@ -1,5 +1,5 @@
 /*
- * DexPatcher - Copyright 2015-2020 Rodrigo Balerdi
+ * DexPatcher - Copyright 2015-2026 Pfuenzle
  * (GNU General Public License version 3 or later)
  *
  * DexPatcher is free software: you can redistribute it and/or modify
@@ -57,8 +57,11 @@ public class FieldSetPatcher extends MemberSetPatcher<Field> {
 	}
 
 	@Override
-	protected String getTargetId(String patchId, Field patch, PatcherAnnotation annotation) {
+	protected String getTargetId(String patchId, Field patch, PatcherAnnotation annotation) throws PatchException {
 		String target = annotation.getTarget();
+		if (target == null) {
+			target = resolveFinderTarget(patchId, annotation, patch.getDefiningClass());
+		}
 		String targetId = (target != null) ? Id.ofField(patch, target) : patchId;
 		if (shouldLogTarget(patchId, targetId)) {
 			extendLogPrefixWithTargetLabel(Label.ofTargetMember(target));
@@ -93,9 +96,15 @@ public class FieldSetPatcher extends MemberSetPatcher<Field> {
 
 		onSimpleRemove(patch, annotation, target);
 
+		// A member located by a finder annotation must keep the name of the
+		// member it replaces, because the original code accesses it by that
+		// name.
+		String name = (annotation.getFinder() != null) ? target.getName() : patch.getName();
+		String definingClass = (annotation.getFinder() != null) ? target.getDefiningClass() : patch.getDefiningClass();
+
 		Field patched = new BasicField(
-				patch.getDefiningClass(),
-				patch.getName(),
+				definingClass,
+				name,
 				patch.getType(),
 				patch.getAccessFlags(),
 				value,

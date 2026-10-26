@@ -94,6 +94,8 @@ public final class FinderMatcher {
     // Fields
 
     public boolean matches(Field field) {
+        // A getter query targets a method, never a field.
+        if (query.getter) return false;
         if (!matchesModifiers(field.getAccessFlags())) return false;
         if (query.name != null && !query.name.equals(field.getName())) return false;
         if (!matchesFieldLabel(field)) return false;
@@ -188,19 +190,35 @@ public final class FinderMatcher {
      */
     private List<String> resolveFields() {
         List<String> result = new ArrayList<>();
-        if (query.field == null) return result;
-        for (String spec : query.field.split("\\+")) {
-            spec = spec.trim();
-            if (spec.isEmpty()) continue;
-            String resolved = spec;
-            if (spec.contains("=") && analysis != null) {
-                String field = analysis.getFieldForLiteral(spec);
-                if (field == null) return new ArrayList<String>();
-                resolved = field;
+        if (query.field != null) {
+            for (String spec : query.field.split("\\+")) {
+                spec = spec.trim();
+                if (spec.isEmpty()) continue;
+                String resolved = resolveFieldSpec(spec);
+                if (resolved == null) return new ArrayList<String>();
+                if (!result.contains(resolved)) result.add(resolved);
             }
+        }
+        // A literal label identifies a field as well.
+        if (query.literal != null && query.literal.contains("=")) {
+            String resolved = resolveFieldSpec(query.literal);
+            if (resolved == null) return new ArrayList<String>();
             if (!result.contains(resolved)) result.add(resolved);
         }
         return result;
+    }
+
+    /**
+     * Resolve a field specification, which is either a field name or a label
+     * such as {@code isPro=} that identifies the field through the class
+     * analysis.
+     *
+     * @return the field name, or null if the specification cannot be resolved
+     */
+    private String resolveFieldSpec(String spec) {
+        if (!spec.contains("=")) return spec;
+        if (analysis == null) return null;
+        return analysis.getFieldForLiteral(spec);
     }
 
     // Shared

@@ -13,6 +13,7 @@ package lanchon.dexpatcher.core.finder;
 import lanchon.dexpatcher.core.util.TypeName;
 
 import org.jf.dexlib2.iface.ClassDef;
+import org.jf.dexlib2.iface.Member;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
 
@@ -34,6 +35,10 @@ public final class FinderResolver {
 
 	public FinderQuery getQuery() {
 		return query;
+	}
+
+	public FinderMatcher getMatcher() {
+		return search.getMatcher();
 	}
 
 	/**
@@ -75,6 +80,33 @@ public final class FinderResolver {
 	public Field resolveField(Iterable<? extends ClassDef> sourceClasses, String searchClass) {
 		List<Field> fields = search.findFields(sourceClasses, searchClass);
 		return fields.isEmpty() ? null : fields.get(0);
+	}
+
+	/**
+	 * Resolve the member to patch.
+	 *
+	 * <p>The kind of member is determined by the query: a query with method
+	 * keys resolves to a method, a query with field keys resolves to a field.
+	 *
+	 * @param sourceClasses the source classes
+	 * @param searchClass   the descriptor of the class to search in, or null to
+	 *                      search in all source classes
+	 * @return the matching member, or null if there is no match
+	 */
+	public Member resolveMember(Iterable<? extends ClassDef> sourceClasses, String searchClass) {
+		switch (query.kind) {
+		case METHOD:
+			return resolveMethod(sourceClasses, searchClass);
+		case FIELD:
+			return resolveField(sourceClasses, searchClass);
+		case CLASS:
+			return (Member) resolveClass(sourceClasses, searchClass);
+		default:
+			// The kind is not determined by the query; try the members first.
+			Member member = resolveMethod(sourceClasses, searchClass);
+			if (member == null) member = resolveField(sourceClasses, searchClass);
+			return member;
+		}
 	}
 
 	/**

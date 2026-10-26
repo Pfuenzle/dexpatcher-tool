@@ -37,16 +37,18 @@ import org.jf.dexlib2.iface.reference.StringReference;
  */
 public final class ClassAnalysis {
 
+	private final String classType;
 	private final Map<String, List<String>> methodFields = new LinkedHashMap<>();
 	private final Map<String, List<String>> methodLiterals = new LinkedHashMap<>();
 	private final Map<String, String> literalToField = new LinkedHashMap<>();
 
 	public ClassAnalysis(ClassDef classDef) {
-		analyze(classDef);
+		this(classDef.getType(), classDef.getMethods());
 	}
 
-	private void analyze(ClassDef classDef) {
-		for (Method method : classDef.getMethods()) {
+	public ClassAnalysis(String classType, Iterable<? extends Method> methods) {
+		this.classType = classType;
+		for (Method method : methods) {
 			List<String> fields = readFields(method);
 			List<String> literals = readLiterals(method);
 			if (fields.isEmpty() && literals.isEmpty()) continue;
@@ -54,6 +56,13 @@ public final class ClassAnalysis {
 			methodLiterals.put(key(method), literals);
 			mapLiteralsToFields(method, fields, literals);
 		}
+	}
+
+	/**
+	 * The type of the analyzed class, as a descriptor.
+	 */
+	public String getClassType() {
+		return classType;
 	}
 
 	/**
