@@ -174,6 +174,11 @@ public final class FinderQuery {
                 }
                 case "g": {
                     if (getter) throw dupKey(key);
+                    if (field != null) {
+                        throw new FinderQueryException("keys 'f' and 'g' are mutually exclusive");
+                    }
+                    // 'g:' names the field whose getter is wanted.
+                    field = value;
                     getter = true;
                     break;
                 }
@@ -193,7 +198,7 @@ public final class FinderQuery {
         // Infer kind: field-specific keys imply FIELD, method-specific imply METHOD,
         // class-specific imply CLASS, otherwise ANY.
         boolean hasField  = (fieldType != null);
-        boolean hasMethod = (paramTypes != null || returnType != null || minSize >= 0);
+        boolean hasMethod = (paramTypes != null || returnType != null || minSize >= 0 || getter);
         boolean hasClass  = (superClass != null || interfaces != null);
 
         if (hasField && hasMethod) {

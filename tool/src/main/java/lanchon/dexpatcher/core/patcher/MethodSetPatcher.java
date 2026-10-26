@@ -1,5 +1,6 @@
 /*
  * DexPatcher - Copyright 2015-2020 Rodrigo Balerdi
+ * Copyright 2026 Pfuenzle
  * (GNU General Public License version 3 or later)
  *
  * DexPatcher is free software: you can redistribute it and/or modify
@@ -153,8 +154,11 @@ public class MethodSetPatcher extends MemberSetPatcher<Method> {
 	}
 
 	@Override
-	protected String getTargetId(String patchId, Method patch, PatcherAnnotation annotation) {
+	protected String getTargetId(String patchId, Method patch, PatcherAnnotation annotation) throws PatchException {
 		String target = annotation.getTarget();
+		if (target == null) {
+			target = resolveFinderTarget(patchId, annotation, patch.getDefiningClass());
+		}
 		String resolvedTarget = (target != null) ? target : patch.getName();
 		String targetId;
 		String targetLabel;
@@ -223,9 +227,15 @@ public class MethodSetPatcher extends MemberSetPatcher<Method> {
 					implementation.getDebugItems());
 		}
 
+		// A member located by a finder annotation must keep the name of the
+		// member it replaces, because the original code invokes it by that
+		// name.
+		String name = (annotation.getFinder() != null) ? target.getName() : patch.getName();
+		String definingClass = (annotation.getFinder() != null) ? target.getDefiningClass() : patch.getDefiningClass();
+
 		Method patched = new BasicMethod(
-				patch.getDefiningClass(),
-				patch.getName(),
+				definingClass,
+				name,
 				patch.getParameters(),
 				patch.getReturnType(),
 				patch.getAccessFlags(),
@@ -238,7 +248,17 @@ public class MethodSetPatcher extends MemberSetPatcher<Method> {
 
 	@Override
 	protected Method onSimpleReplace(Method patch, PatcherAnnotation annotation, Method target, boolean inPlace) {
-		return onSimpleAdd(patch, annotation);
+		if (annotation.getFinder() == null) return onSimpleAdd(patch, annotation);
+		// Keep the name of the replaced member.
+		Method renamed = new BasicMethod(
+				target.getDefiningClass(),
+				target.getName(),
+				patch.getParameters(),
+				patch.getReturnType(),
+				patch.getAccessFlags(),
+				annotation.getFilteredAnnotations(),
+				patch.getImplementation());
+		return onSimpleAdd(renamed, annotation);
 	}
 
 	// Wrap
