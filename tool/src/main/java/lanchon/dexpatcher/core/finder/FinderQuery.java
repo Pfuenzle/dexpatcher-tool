@@ -50,6 +50,16 @@ public final class FinderQuery {
     // Code-size filter (method)
     public final int minSize;    // -1 = unset
 
+    // Semantic filters, resolved against the class analysis.
+    // 'l:' matches a method by a string literal it contains (for example
+    //     the "isPro=" label of a generated Kotlin data class toString()).
+    // 'f:' matches a method by the field it reads, or a field by its label.
+    // 'g:' matches a getter, that is, a method that reads exactly the field
+    //     given by 'f:' and returns it.
+    public final String literal;
+    public final String field;
+    public final boolean getter;
+
     public final Kind kind;
 
     private FinderQuery(
@@ -62,6 +72,9 @@ public final class FinderQuery {
             List<String> interfaces,
             List<String> annotations,
             int minSize,
+            String literal,
+            String field,
+            boolean getter,
             Kind kind) {
         this.modifiers  = modifiers;
         this.paramTypes = paramTypes;
@@ -72,6 +85,9 @@ public final class FinderQuery {
         this.interfaces = interfaces;
         this.annotations = annotations;
         this.minSize    = minSize;
+        this.literal    = literal;
+        this.field      = field;
+        this.getter     = getter;
         this.kind       = kind;
     }
 
@@ -94,6 +110,9 @@ public final class FinderQuery {
         List<String> interfaces  = null;
         List<String> annotations = null;
         int minSize = -1;
+        String literal = null;
+        String field = null;
+        boolean getter = false;
 
         String[] tokens = query.split(",");
         for (String raw : tokens) {
@@ -143,6 +162,21 @@ public final class FinderQuery {
                     if (annotations != null) throw dupKey(key);
                     annotations = splitPlus(value);
                     break;
+                case "l": {
+                    if (literal != null) throw dupKey(key);
+                    literal = value;
+                    break;
+                }
+                case "f": {
+                    if (field != null) throw dupKey(key);
+                    field = value;
+                    break;
+                }
+                case "g": {
+                    if (getter) throw dupKey(key);
+                    getter = true;
+                    break;
+                }
                 case "z":
                     if (minSize != -1) throw dupKey(key);
                     try {
@@ -188,6 +222,9 @@ public final class FinderQuery {
                 unmodifiable(interfaces),
                 unmodifiable(annotations),
                 minSize,
+                literal,
+                field,
+                getter,
                 kind);
     }
 

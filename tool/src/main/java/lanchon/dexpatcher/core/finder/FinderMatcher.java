@@ -10,6 +10,7 @@
 
 package lanchon.dexpatcher.core.finder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jf.dexlib2.AccessFlags;
@@ -33,9 +34,22 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 public final class FinderMatcher {
 
     private final FinderQuery query;
+    private ClassAnalysis analysis;
 
     public FinderMatcher(FinderQuery query) {
         this.query = query;
+    }
+
+    /**
+     * Set the analysis of the class the members are searched in. It is used to
+     * resolve the semantic filters ({@code l:}, {@code f:} and {@code g:}).
+     */
+    public void setAnalysis(ClassAnalysis analysis) {
+        this.analysis = analysis;
+    }
+
+    public ClassAnalysis getAnalysis() {
+        return analysis;
     }
 
     public FinderQuery getQuery() {
@@ -47,6 +61,9 @@ public final class FinderMatcher {
     public boolean matches(Method method) {
         if (!matchesModifiers(method.getAccessFlags())) return false;
         if (query.name != null && !query.name.equals(method.getName())) return false;
+        if (!matchesLiteral(method)) return false;
+        if (!matchesField(method)) return false;
+        if (query.getter && !isGetterOf(method)) return false;
         if (!matchesParameters(method)) return false;
         if (query.returnType != null &&
                 !matchesType(query.returnType, method.getReturnType())) return false;
@@ -79,6 +96,7 @@ public final class FinderMatcher {
     public boolean matches(Field field) {
         if (!matchesModifiers(field.getAccessFlags())) return false;
         if (query.name != null && !query.name.equals(field.getName())) return false;
+        if (!matchesFieldLabel(field)) return false;
         if (query.fieldType != null && !matchesType(query.fieldType, field.getType())) return false;
         return true;
     }
@@ -117,6 +135,72 @@ public final class FinderMatcher {
             if (matchesType(type, annotation.getType())) return true;
         }
         return false;
+    }
+
+    // Semantic filters
+
+    private boolean matchesLiteral(Method method) {
+        if (query.literal == null) return true;
+        if (analysis == null) return false;
+        for (String literal : analysis.getLiterals(method)) {
+            if (literal.contains(query.literal)) return true;
+        }
+        return false;
+    }
+
+    private boolean matchesField(Method method) {
+        if (query.field == null) return true;
+        if (analysis == null) return false;
+        List<String> required = resolveFields();
+        if (required.isEmpty()) return false;
+        List<String> read = analysis.getReadFields(method);
+        return read.containsAll(required);
+    }
+
+    private boolean matchesFieldLabel(Field field) {
+        if (query.literal == null) return true;
+        if (analysis == null) return false;
+        String resolved = analysis.getFieldForLiteral(query.literal);
+        return resolved != null && resolved.equals(field.getName());
+    }
+
+    /**
+     * A getter is a method that reads exactly the given fields and returns one
+     * of them, taking no arguments. This is how a Kotlin property accessor
+     * looks after obfuscation.
+     */
+    private boolean isGetterOf(Method method) {
+        if (query.field == null) return false;
+        if (!method.getParameterTypes().isEmpty()) return false;
+        if (analysis == null) return false;
+        List<String> required = resolveFields();
+        if (required.isEmpty()) return false;
+        List<String> read = analysis.getReadFields(method);
+        return read.size() == required.size() && read.containsAll(required);
+    }
+
+    /**
+     * Resolve the field specifications of the query into field names.
+     *
+     * <p>A specification is either a field name, or a label such as
+     * {@code isPro=} that identifies the field through the class analysis.
+     * Multiple specifications are separated by a plus sign.
+     */
+    private List<String> resolveFields() {
+        List<String> result = new ArrayList<>();
+        if (query.field == null) return result;
+        for (String spec : query.field.split("\\+")) {
+            spec = spec.trim();
+            if (spec.isEmpty()) continue;
+            String resolved = spec;
+            if (spec.contains("=") && analysis != null) {
+                String field = analysis.getFieldForLiteral(spec);
+                if (field == null) return new ArrayList<String>();
+                resolved = field;
+            }
+            if (!result.contains(resolved)) result.add(resolved);
+        }
+        return result;
     }
 
     // Shared
