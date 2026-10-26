@@ -41,20 +41,34 @@ public final class ClassAnalysis {
 	private final Map<String, List<String>> methodFields = new LinkedHashMap<>();
 	private final Map<String, List<String>> methodLiterals = new LinkedHashMap<>();
 	private final Map<String, String> literalToField = new LinkedHashMap<>();
+	private final Map<String, String> fieldToLabel = new LinkedHashMap<>();
+	private final Set<String> fieldNames = new LinkedHashSet<>();
 
 	public ClassAnalysis(ClassDef classDef) {
-		this(classDef.getType(), classDef.getMethods());
+		this(classDef.getType(), classDef.getMethods(), classDef.getFields());
+	}
+
+	public ClassAnalysis(ClassDef classDef, Iterable<? extends org.jf.dexlib2.iface.Field> fields) {
+		this(classDef.getType(), classDef.getMethods(), fields);
 	}
 
 	public ClassAnalysis(String classType, Iterable<? extends Method> methods) {
+		this(classType, methods, java.util.Collections.<org.jf.dexlib2.iface.Field>emptyList());
+	}
+
+	public ClassAnalysis(String classType, Iterable<? extends Method> methods,
+			Iterable<? extends org.jf.dexlib2.iface.Field> fields) {
 		this.classType = classType;
+		for (org.jf.dexlib2.iface.Field field : fields) {
+			fieldNames.add(field.getName());
+		}
 		for (Method method : methods) {
-			List<String> fields = readFields(method);
+			List<String> readFields = readFields(method);
 			List<String> literals = readLiterals(method);
-			if (fields.isEmpty() && literals.isEmpty()) continue;
-			methodFields.put(key(method), fields);
+			if (readFields.isEmpty() && literals.isEmpty()) continue;
+			methodFields.put(key(method), readFields);
 			methodLiterals.put(key(method), literals);
-			mapLiteralsToFields(method, fields, literals);
+			mapLiteralsToFields(method, readFields, literals);
 		}
 	}
 
@@ -86,7 +100,55 @@ public final class ClassAnalysis {
 				// Conflicting associations; keep the first one.
 				literalToField.put(label, previous);
 			}
+			fieldToLabel.put(field, label);
 		}
+	}
+
+	/**
+	 * The semantic name of a field, as derived from the label used by the
+	 * generated {@code toString()} method.
+	 *
+	 * <p>A label such as {@code "EntitlementStatus(isPro="} or {@code ", isPlus="}
+	 * yields the name {@code isPro} or {@code isPlus}. This is how the
+	 * obfuscated fields of a Kotlin data class regain their meaning.
+	 */
+	public String getSemanticName(String fieldName) {
+		String label = fieldToLabel.get(fieldName);
+		if (label == null) return null;
+		return extractSemanticName(label);
+	}
+
+	/**
+	 * The field behind a semantic name, or null if there is no such field.
+	 */
+	public String getFieldForSemanticName(String name) {
+		for (Map.Entry<String, String> entry : fieldToLabel.entrySet()) {
+			if (name.equals(extractSemanticName(entry.getValue()))) return entry.getKey();
+		}
+		return null;
+	}
+
+	/**
+	 * The names of the fields of the analyzed class.
+	 */
+	public Set<String> getFieldNames() {
+		return fieldNames;
+	}
+
+	/**
+	 * Extract the semantic name of a label such as
+	 * {@code "EntitlementStatus(isPro="} or {@code ", isPlus="}.
+	 */
+	private static String extractSemanticName(String label) {
+		int index = label.indexOf('=');
+		if (index < 0) return null;
+		String name = label.substring(0, index);
+		int paren = name.lastIndexOf('(');
+		if (paren >= 0) name = name.substring(paren + 1);
+		name = name.trim();
+		int comma = name.lastIndexOf(',');
+		if (comma >= 0) name = name.substring(comma + 1).trim();
+		return name.isEmpty() ? null : name;
 	}
 
 	// Public API

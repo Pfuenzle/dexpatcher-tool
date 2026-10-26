@@ -1,6 +1,5 @@
 /*
- * DexPatcher - Copyright 2015-2020 Rodrigo Balerdi
- * Copyright 2026 Pfuenzle
+ * DexPatcher - Copyright 2015-2020 Rodrigo Balerdi, 2026 Pfuenzle
  * (GNU General Public License version 3 or later)
  *
  * DexPatcher is free software: you can redistribute it and/or modify
@@ -201,7 +200,7 @@ public class ClassSetPatcher extends AnnotatableSetPatcher<ClassDef> {
 		Collection<ClassDef> sourceClasses = getSourceMap() != null
 				? new ArrayList<>(getSourceMap().values())
 				: Collections.<ClassDef>emptyList();
-		ClassAnalysis analysis = new ClassAnalysis(target);
+		ClassAnalysis analysis = new ClassAnalysis(target, target.getFields());
 		fieldPatcher.setFinderContext(sourceClasses, analysis);
 		methodPatcher.setFinderContext(sourceClasses, analysis);
 	}

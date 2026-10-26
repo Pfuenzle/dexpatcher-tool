@@ -209,16 +209,28 @@ public final class FinderMatcher {
     }
 
     /**
-     * Resolve a field specification, which is either a field name or a label
-     * such as {@code isPro=} that identifies the field through the class
-     * analysis.
+     * Resolve a field specification, which is:
+     * <ul>
+     *   <li>a field name ({@code a}, {@code b}) — returned directly;</li>
+     *   <li>a semantic name ({@code isPro}, {@code isPlus}) — looked up via
+     *       the toString-label analysis;</li>
+     *   <li>a full label ({@code isPro=}) — looked up in the literal map.</li>
+     * </ul>
      *
-     * @return the field name, or null if the specification cannot be resolved
+     * @return the real (possibly obfuscated) field name, or null if unresolved
      */
     private String resolveFieldSpec(String spec) {
-        if (!spec.contains("=")) return spec;
-        if (analysis == null) return null;
-        return analysis.getFieldForLiteral(spec);
+        // Full label (contains '=') → literal map.
+        if (spec.contains("=")) {
+            if (analysis == null) return null;
+            return analysis.getFieldForLiteral(spec);
+        }
+        if (analysis == null) return spec;
+        // If the spec is an actual field name, use it directly.
+        if (analysis.getFieldNames().contains(spec)) return spec;
+        // Otherwise treat it as a semantic name and look it up.
+        String resolved = analysis.getFieldForSemanticName(spec);
+        return resolved != null ? resolved : spec;
     }
 
     // Shared
