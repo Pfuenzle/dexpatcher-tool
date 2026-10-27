@@ -16,7 +16,7 @@ main options:
                               (default: available processors up to 4)
     --max-dex-pool-size <n>   maximum size of dex pools (default: 65536)
     --annotations <package>   package name of DexPatcher annotations
-                              (default: 'lanchon.dexpatcher.annotation')
+                              (default: 'io.pfuenzle.dexweaver.annotation')
     --no-auto-ignore          no trivial default constructor auto-ignore
  -o,--output <dex-or-dir>     name of output file or directory
     --create-map <file>       create template map file based on output

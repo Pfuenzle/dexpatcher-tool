@@ -9,11 +9,11 @@
  */
 
 ext.configurePom = { pom ->
-    pom.description = 'Android Dalvik bytecode patcher.'
-    pom.url = 'https://github.com/DexPatcher/dexpatcher-tool'
+    pom.description = 'Android Dalvik bytecode patcher. Fork of DexPatcher.'
+    pom.url = 'https://github.com/Pfuenzle/dexweaver-tool'
     pom.organization {
-        name = 'DexPatcher'
-        url = 'https://dexpatcher.github.io/'
+        name = 'DexWeaver'
+        url = 'https://github.com/Pfuenzle/dexweaver-tool'
     }
     pom.licenses {
         license {
@@ -23,14 +23,14 @@ ext.configurePom = { pom ->
     }
     pom.developers {
         developer {
-            name = 'Lanchon'
-            url = 'https://github.com/Lanchon'
+            name = 'pfuenzle'
+            url = 'https://github.com/Pfuenzle'
         }
     }
     pom.scm {
-        connection = 'scm:git:git://github.com/DexPatcher/dexpatcher-tool.git'
-        developerConnection = 'scm:git:ssh://github.com:DexPatcher/dexpatcher-tool.git'
-        url = 'https://github.com/DexPatcher/dexpatcher-tool'
+        connection = 'scm:git:git://github.com/Pfuenzle/dexweaver-tool.git'
+        developerConnection = 'scm:git:ssh://github.com:Pfuenzle/dexweaver-tool.git'
+        url = 'https://github.com/Pfuenzle/dexweaver-tool'
     }
 }
 

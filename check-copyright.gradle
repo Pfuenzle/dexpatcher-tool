@@ -10,11 +10,13 @@
 
 task checkCopyrightNotice {
     dependsOn { subprojects*.tasks.build }
-    def notice = "Copyright 2015-${new java.text.SimpleDateFormat('yyyy').format(new Date())}"
+    // The upstream copyright notice is preserved verbatim, including its
+    // original year range, so this check only verifies that the notice is
+    // present rather than that it has been rolled forward.
     def checkNotice = { noticeFile ->
-        if (!file(noticeFile).text.contains(notice)) {
+        if (!file(noticeFile).text.contains('DexPatcher - Copyright 2015-')) {
             System.err.println "********************************  WARNING  ********************************"
-            System.err.println "Expired copyright notice: ${noticeFile}"
+            System.err.println "Missing copyright notice: ${noticeFile}"
             System.err.println "***************************************************************************"
         }
     }

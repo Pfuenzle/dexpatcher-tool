@@ -10,7 +10,7 @@
 
 package test;
 
-import lanchon.dexpatcher.annotation.*;
+import io.pfuenzle.dexweaver.annotation.*;
 
 // DexPatcher Tool Sample
 

@@ -18,10 +18,10 @@ plugins {
 group = parent.group
 version = parent.version
 
-ext.mainArtifact = 'dexpatcher-tool'
-ext.artifactName = 'DexPatcher-tool'
+ext.mainArtifact = 'dexweaver-tool'
+ext.artifactName = 'DexWeaver-tool'
 
-def fatArtifact = 'dexpatcher'
+def fatArtifact = 'dexweaver'
 
 sourceCompatibility = '1.7'
 def jdk = findProperty('JDK7_HOME') ?: '/usr/lib/jvm/java-7-openjdk-amd64'
@@ -30,6 +30,7 @@ if (jdk_rt.exists()) compileJava.options.bootstrapClasspath = files(jdk_rt)
 
 repositories {
     jcenter()
+    mavenCentral()
 
     // Use local version of multidexlib2:
     maven {
@@ -67,7 +68,7 @@ task createVersionFile {
 processResources {
     dependsOn createVersionFile
     from(versionFile) {
-        into 'lanchon/dexpatcher'
+        into 'io/pfuenzle/dexweaver'
     }
 }
 
@@ -85,7 +86,7 @@ shadowJar {
     archiveClassifier.set null
     manifest {
         attributes(
-                'Main-Class': 'lanchon.dexpatcher.Main'
+                'Main-Class': 'io.pfuenzle.dexweaver.Main'
         )
     }
     exclude '*.txt'

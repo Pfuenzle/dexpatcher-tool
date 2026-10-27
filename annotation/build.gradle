@@ -17,8 +17,8 @@ plugins {
 group = parent.group
 version = parent.version
 
-ext.mainArtifact = 'dexpatcher-annotation'
-ext.artifactName = 'DexPatcher-annotation'
+ext.mainArtifact = 'dexweaver-annotation'
+ext.artifactName = 'DexWeaver-annotation'
 
 sourceCompatibility = '1.6'
 def jdk = findProperty('JDK6_HOME') ?: '/usr/lib/jvm/java-6-openjdk-amd64'
