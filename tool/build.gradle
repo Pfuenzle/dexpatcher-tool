@@ -1,0 +1,127 @@
+/*
+ * DexPatcher - Copyright 2015-2020 Rodrigo Balerdi
+ * (GNU General Public License version 3 or later)
+ *
+ * DexPatcher is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ */
+
+plugins {
+    id 'java-library'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'maven-publish'
+    id 'signing'
+}
+
+group = parent.group
+version = parent.version
+
+ext.mainArtifact = 'dexpatcher-tool'
+ext.artifactName = 'DexPatcher-tool'
+
+def fatArtifact = 'dexpatcher'
+
+sourceCompatibility = '1.7'
+def jdk = findProperty('JDK7_HOME') ?: '/usr/lib/jvm/java-7-openjdk-amd64'
+def jdk_rt = new File(jdk, 'jre/lib/rt.jar')
+if (jdk_rt.exists()) compileJava.options.bootstrapClasspath = files(jdk_rt)
+
+repositories {
+    jcenter()
+
+    // Use local version of multidexlib2:
+    maven {
+        url = '../../multidexlib2/build/repository'
+    }
+}
+
+def dexlib2Version = '2.3.4'
+def multidexlib2VersionSuffix = '.r2'
+
+def multidexlib2Version = dexlib2Version + multidexlib2VersionSuffix
+
+dependencies {
+    implementation 'commons-cli:commons-cli:1.4'
+    implementation 'com.github.lanchon.dexpatcher:multidexlib2:' + multidexlib2Version
+    api 'org.smali:dexlib2:' + dexlib2Version
+}
+
+compileJava {
+    options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
+}
+
+apply from: '../configure-artifacts.gradle'
+
+def versionFile = layout.buildDirectory.file('version-file/version')
+
+task createVersionFile {
+    inputs.property 'version', version
+    outputs.file versionFile
+    doLast {
+        versionFile.get().asFile.text = version
+    }
+}
+
+processResources {
+    dependsOn createVersionFile
+    from(versionFile) {
+        into 'lanchon/dexpatcher'
+    }
+}
+
+// The Shadow plugin erroneously unpacks nested jars.
+// The issue can be worked around by double-jarring the jars.
+task shadowBugWorkaround(type: Jar) {
+    destinationDirectory.set layout.buildDirectory.dir('shadow-bug-workaround')
+    archiveBaseName.set 'nested-content'
+    from jar
+    from tasks.getByPath(':annotation:jar')
+}
+
+shadowJar {
+    archiveBaseName.set fatArtifact
+    archiveClassifier.set null
+    manifest {
+        attributes(
+                'Main-Class': 'lanchon.dexpatcher.Main'
+        )
+    }
+    exclude '*.txt'
+    exclude 'META-INF/*.txt'
+    exclude 'META-INF/maven/**'
+    from('about') {
+        into 'META-INF/about'
+    }
+    //from jar
+    //from tasks.getByPath(':annotation:jar')
+    from shadowBugWorkaround
+}
+
+assemble.dependsOn shadowJar
+
+apply from: '../configure-publishing.gradle'
+
+publishing {
+    publications {
+        dexpatcherTool(MavenPublication) {
+            artifactId = mainArtifact
+            from components.java
+            pom {
+                name = artifactName
+                configurePom it
+            }
+        }
+        dexpatcher(MavenPublication) {
+            artifactId = fatArtifact
+            artifact shadowJar
+            artifact javadocJar
+            artifact sourcesJar
+            pom {
+                name = artifactName + ' (Fat JAR)'
+                configurePom it
+            }
+        }
+    }
+}

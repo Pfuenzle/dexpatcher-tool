@@ -1,0 +1,43 @@
+/*
+ * DexPatcher - Copyright 2015-2020 Rodrigo Balerdi
+ * (GNU General Public License version 3 or later)
+ *
+ * DexPatcher is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ */
+
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+}
+
+group = parent.group
+version = parent.version
+
+ext.mainArtifact = 'dexpatcher-annotation'
+ext.artifactName = 'DexPatcher-annotation'
+
+sourceCompatibility = '1.6'
+def jdk = findProperty('JDK6_HOME') ?: '/usr/lib/jvm/java-6-openjdk-amd64'
+def jdk_rt = new File(jdk, 'jre/lib/rt.jar')
+if (jdk_rt.exists()) compileJava.options.bootstrapClasspath = files(jdk_rt)
+
+apply from: '../configure-artifacts.gradle'
+
+apply from: '../configure-publishing.gradle'
+
+publishing {
+    publications {
+        dexpatcherAnnotation(MavenPublication) {
+            artifactId = mainArtifact
+            from components.java
+            pom {
+                name = artifactName
+                configurePom it
+            }
+        }
+    }
+}

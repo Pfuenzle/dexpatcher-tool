@@ -1,0 +1,666 @@
+$ d8 --no-desugaring --output build/source.dex.zip source/build/libs/source.jar
+
+$ d8 --no-desugaring --output build/patch.dex.zip patch/build/libs/patch.jar
+
+$ dexpatcher --help
+DexPatcher version 1.8.0-beta1 by Lanchon (https://dexpatcher.github.io/)
+
+usage: dexpatcher [<option> ...] [--output <patched-dex-or-dir>]
+                  <source-dex-apk-or-dir> [<patch-dex-apk-or-dir> ...]
+
+main options:
+ -a,--api-level <n>           android api level (default: auto-detect)
+ -m,--multi-dex               enable multi-dex support
+ -M,--multi-dex-threaded      multi-threaded multi-dex (implies: -m)
+ -J,--multi-dex-jobs <n>      multi-dex thread count (implies: -m -M)
+                              (default: available processors up to 4)
+    --max-dex-pool-size <n>   maximum size of dex pools (default: 65536)
+    --annotations <package>   package name of DexPatcher annotations
+                              (default: 'lanchon.dexpatcher.annotation')
+    --no-auto-ignore          no trivial default constructor auto-ignore
+ -o,--output <dex-or-dir>     name of output file or directory
+    --create-map <file>       create template map file based on output
+    --dry-run                 do not write output files (much faster)
+ -q,--quiet                   do not output warnings
+ -v,--verbose                 output extra information
+ -d,--debug                   output debugging information
+ -p,--path                    output relative paths of source code files
+ -P,--path-root <root>        output absolute paths of source code files
+    --stats                   output timing statistics
+ -h,--help                    print this help message and exit
+    --version                 print version information and exit
+
+code transform options:
+    --map-source              apply map to identifiers in source
+    --unmap-source            apply map inverse to identifiers in source
+    --unmap-patches           apply map inverse to identifiers in patches
+    --unmap-output            apply map inverse to identifiers in output
+    --map <file>              identifier map file (repeatable option)
+    --invert-map              use inverse of identifier map file
+    --compose-map <file>      compose map file (repeatable option)
+    --invert-compose-map      use inverse of compose map file
+    --deanon-source           deanonymize anonymous classes in source
+    --deanon-source-alt       deanonymize source with alternate plan
+    --deanon-patches          deanonymize anonymous classes in patches
+    --deanon-patches-alt      deanonymize patches with alternate plan
+    --reanon-source           reanonymize anonymous classes in source
+    --reanon-patches          reanonymize anonymous classes in patches
+    --reanon-output           reanonymize anonymous classes in output
+    --main-plan <anon-plan>   main anonymization plan (default: 'Anon[_]')
+    --alt-plan <anon-plan>    alternate plan (default: '[_]_patch')
+    --no-reanon-errors        treat reanonymize errors as warnings
+    --decode-source           decode identifiers in source
+    --decode-patches          decode identifiers in patches
+    --decode-output           decode identifiers in output
+    --code-marker <marker>    identifier code marker (default: '_$$_')
+    --no-decode-errors        treat decode errors as warnings
+    --pre-transform <set>     add pre-transform stages (default: 'out')
+                              (<set>: 'none'|'dry'|'out'|'inout'|'all')
+
+identifier encode options:
+    --encode-source                encode identifiers in source
+    --encode-map <file>            encode map file (repeatable option)
+    --invert-encode-map            use inverse of encode map file
+    --escape-non-ascii             escape non-ASCII characters
+    --escape-non-latin             escape non-ASCII/Latin-1 characters
+    --no-ascii-escapes             do not output ASCII escapes
+    --no-code-point-escapes        do not output code point escapes
+    --obfuscated-types <ptrn>      pattern for binary type names
+                                   (form: '[<pkg>/...][<cls>$...]<cls>')
+    --obfuscated-packages <ptrn>   pattern for non-qualified package names
+    --obfuscated-classes <ptrn>    pattern for non-qualified class names
+                                   (form: '[<cls>$...]<cls>')
+    --obfuscated-members <ptrn>    pattern for member names
+    --encode-all-classes           encode all class names
+    --encode-obfuscated-packages   encode obfuscated package names
+    --encode-obfuscated-classes    encode obfuscated class names
+    --encode-obfuscated-members    encode obfuscated member names
+    --encode-reserved-chars        encode names with reserved characters
+    --encode-reserved-words        encode names matching reserved words
+    --encode-class-hints           encode type hints in classes
+    --encode-member-hints          encode type hints in members
+    --encode-member-type           encode member type in members
+    --no-identifier-type           do not encode identifier type
+    --no-multiple-hints            only allow unique type hints
+    --no-nested-classes            disable nested class processing
+    --ignored-hint-type <type>     fully qualified name of type
+                                   (use '-' to remove defaults)
+                                   (repeatable option)
+    --ignored-hint-types <ptrn>    pattern for binary type names
+                                   (form: '[<pkg>/...][<cls>$...]<cls>')
+    --encode-compilable            allow recompile of obfuscated code
+
+
+$ dexpatcher build/source.dex.zip build/patch.dex.zip --output build/patched.dex --create-map build/template-mapping.txt --map-source --unmap-output --map mapping.txt --compose-map compose-mapping.txt --encode-source --encode-map encode-mapping.txt --escape-non-ascii --encode-reserved-chars --encode-obfuscated-classes --obfuscated-classes .\*OBF --encode-class-hints --encode-obfuscated-members --obfuscated-members .\*OBF --encode-member-hints --deanon-source --reanon-output --main-plan Anon\[_Level\] --deanon-patches-alt --no-reanon-errors --decode-patches --no-decode-errors --debug
+DexPatcher version 1.8.0-beta1 by Lanchon (https://dexpatcher.github.io/)
+info: read 'build/source.dex.zip'
+debug: read 'build/source.dex.zip': file 'classes.dex': 48 types
+debug: read 'build/source.dex.zip': dex version '035'
+debug: deanonymize source: type 'test.Main$AnonymousClasses$1$1$Inner': deanonymized to 'test.Main$AnonymousClasses$Anon1$Anon1_Level2$Inner'
+debug: deanonymize source: type 'test.Main$AnonymousClasses$1$1': deanonymized to 'test.Main$AnonymousClasses$Anon1$Anon1_Level2'
+debug: deanonymize source: type 'test.Main$AnonymousClasses$1': deanonymized to 'test.Main$AnonymousClasses$Anon1'
+debug: deanonymize source: type 'test.Main$AnonymousClasses$Anon1$1': deanonymized to 'test.Main$AnonymousClasses$Anon1_Level2$Anon1_Level2'
+debug: deanonymize source: type 'test.Main$AnonymousClasses$Anon1$Anon1_Level2': deanonymized to 'test.Main$AnonymousClasses$Anon1_Level2$Anon1_Level4'
+debug: deanonymize source: type 'test.Main$AnonymousClasses$Anon1': deanonymized to 'test.Main$AnonymousClasses$Anon1_Level2'
+debug: map source: type 'test.Main$ObfuscatedClassForTargeting': mapped to 'test.Main$TargetedClass'
+debug: map source: type 'test.Main$ObfuscatedDbRecord': mapped to 'test.Main$User'
+debug: map source: type 'test.Main$ObfuscatedThing': mapped to 'test.Main$Thing'
+info: read 'build/patch.dex.zip'
+debug: read 'build/patch.dex.zip': file 'classes.dex': 36 types
+debug: read 'build/patch.dex.zip': dex version '035'
+debug: encode source: type 'test.Main$Double_$$_Encoding': escaped to 'test.Main$Double__$$_$U__$$_Encoding'
+debug: encode source: type 'test.Main$HintOnInterfaceOBF': encoded to 'test.Main$__C1_H_Iterable_$$_HintOnInterfaceOBF__'
+debug: encode source: type 'test.Main$HintOnParentOBF$Inner': encoded to 'test.Main$__C1_H_HashMap_$$_HintOnParentOBF__$Inner'
+debug: encode source: type 'test.Main$HintOnParentOBF$InnerOBF': encoded to 'test.Main$__C1_H_HashMap_$$_HintOnParentOBF__$__C2_$$_InnerOBF__'
+debug: encode source: type 'test.Main$HintOnParentOBF': encoded to 'test.Main$__C1_H_HashMap_$$_HintOnParentOBF__'
+debug: encode source: type 'test.Main$NonAsciiCharacters$AnimalesAutóctonos': encoded to 'test.Main$NonAsciiCharacters$__C2_$$_AnimalesAut$aF3ctonos__'
+debug: encode source: type 'test.Main$ObfuscatedClassForEncodingWithMap': encoded to 'test.Main$__C1_EncodedClass_$$_ObfuscatedClassForEncodingWithMap__'
+debug: encode source: type 'test.Main$HintOnGrandparentOBF': encoded to 'test.Main$__C1_H_HashMap_$$_HintOnGrandparentOBF__'
+debug: encode source: type 'test.Main$HintOnParentInterfaceOBF': encoded to 'test.Main$__C1_H_Iterable_Runnable_$$_HintOnParentInterfaceOBF__'
+debug: type 'test.Main$A': (Main.java:0): replace
+debug: type 'test.Main$Abstract': (Main.java:0): ignore
+debug: deanonymize patch: type 'test.Main$AnonymousClasses$1': deanonymized to 'test.Main$AnonymousClasses$1_patch'
+debug: type 'test.Main$AnonymousClasses$1_patch': (Main.java:0): add
+debug: type 'test.Main$AnonymousClasses$Anon1$Anon1_Level2': (Main.java:0): edit
+info: type 'test.Main$AnonymousClasses$Anon1$Anon1_Level2': method '<init>():void': (Main.java:802): implicit ignore of trivial default constructor
+debug: type 'test.Main$AnonymousClasses$Anon1$Anon1_Level2': method '<init>():void': (Main.java:802): ignore
+debug: type 'test.Main$AnonymousClasses$Anon1$Anon1_Level2': method 'run():void': (Main.java:805): replace
+debug: type 'test.Main$AnonymousClasses$Anon1': (Main.java:0): edit
+info: type 'test.Main$AnonymousClasses$Anon1': method '<init>():void': (Main.java:800): implicit ignore of trivial default constructor
+debug: type 'test.Main$AnonymousClasses$Anon1': method '<init>():void': (Main.java:800): ignore
+debug: decode patch: type 'test.Main$AnonymousClasses$__UnexpectedAnonymousClass_$$_42__': decoded to 'test.Main$AnonymousClasses$42'
+debug: decode patch: annotation element value '__UnexpectedAnonymousClass_$$_42__': decoded to '42'
+debug: type 'test.Main$AnonymousClasses$42': (Main.java:0): add
+debug: type 'test.Main$AnonymousClasses': (Main.java:0): edit
+info: type 'test.Main$AnonymousClasses': method '<init>():void': (Main.java:798): implicit ignore of trivial default constructor
+debug: type 'test.Main$AnonymousClasses': method '<init>():void': (Main.java:798): ignore
+debug: type 'test.Main$AnonymousClasses': method 'print():void': (Main.java:816): append
+debug: type 'test.Main$B': (Main.java:0): edit
+debug: type 'test.Main$B': field 'staticField:int': (Main.java:0): add
+debug: type 'test.Main$B': field 'instanceField:int': (Main.java:0): add
+debug: type 'test.Main$B': field 'privateKey:java.lang.String': (Main.java:0): edit
+info: type 'test.Main$B': field 'privateKey:java.lang.String': (Main.java:0): 'private' modifier changed to 'public' in edited field
+debug: type 'test.Main$B': method '<clinit>():void': (Main.java:104): add
+debug: type 'test.Main$B': method '<init>():void': (Main.java:147): ignore
+debug: type 'test.Main$B': method 'directMethod():void': (Main.java:156): replace
+debug: type 'test.Main$B': method 'privateStaticMethod(int):void': (Main.java:116): edit
+info: type 'test.Main$B': method 'privateStaticMethod(int):void': (Main.java:116): 'private' modifier changed to 'public' in edited method
+debug: type 'test.Main$B': method 'source_virtualMethod(java.lang.String):void': (Main.java:165): edit
+debug: type 'test.Main$B': method 'source_virtualMethod(java.lang.String):void': target 'virtualMethod': (Main.java:165): 'public' modifier changed to 'private' in renamed method
+debug: type 'test.Main$B': method 'addedMethod():void': (Main.java:151): add
+debug: type 'test.Main$B': method 'appendTestMethod(java.lang.String):void': (Main.java:213): append
+debug: type 'test.Main$B': method 'prependTestMethod(java.lang.String):void': (Main.java:207): prepend
+debug: type 'test.Main$B': method 'virtualMethod(java.lang.String):void': (Main.java:170): add
+debug: type 'test.Main$B': method 'wrapTestMethod(java.lang.String):void': (Main.java:189): wrap
+debug: type 'test.Main$Base': (Main.java:0): ignore
+debug: type 'test.Main$C': (Main.java:0): edit
+debug: type 'test.Main$C': field 'patchStaticField:int': (Main.java:0): add
+warning: type 'test.Main$C': field 'patchStaticField:int': (Main.java:0): static field will not be initialized as specified in patch because code of static constructor of class is being discarded
+debug: type 'test.Main$C': field 'redefinedSourceStaticField:int': (Main.java:0): edit
+warning: type 'test.Main$C': field 'redefinedSourceStaticField:int': (Main.java:0): static field will not be initialized as specified in patch because code of static constructor of class is being discarded
+debug: type 'test.Main$C': field 'patchField:int': (Main.java:0): add
+debug: type 'test.Main$C': field 'redefinedSourceField:int': (Main.java:0): edit
+debug: type 'test.Main$C': method '<clinit>():void': (Main.java:249): ignore
+debug: type 'test.Main$C': method '<init>():void': (Main.java:271): ignore
+debug: type 'test.Main$C': method 'print():void': (Main.java:279): append
+debug: type 'test.Main$Concrete3': (Main.java:0): edit
+info: type 'test.Main$Concrete3': method '<init>():void': (Main.java:565): implicit ignore of trivial default constructor
+debug: type 'test.Main$Concrete3': method '<init>():void': (Main.java:565): ignore
+debug: type 'test.Main$Concrete3': method 'method():void': (Main.java:568): replace
+debug: type 'test.Main$CrossClassA': (Main.java:0): add
+debug: type 'test.Main$CrossClassAHelper': (Main.java:0): edit
+info: type 'test.Main$CrossClassAHelper': method '<init>():void': (Main.java:592): implicit ignore of trivial default constructor
+debug: type 'test.Main$CrossClassAHelper': method '<init>():void': (Main.java:592): ignore
+debug: type 'test.Main$CrossClassAHelper': method 'help2(test.Main$source_CrossClassA):void': (Main.java:594): add
+debug: type 'test.Main$CrossClassBPatcher': (Main.java:0): edit
+info: type 'test.Main$CrossClassBPatcher': target 'test.Main$CrossClassB': method '<init>():void': (Main.java:624): implicit ignore of trivial default constructor
+debug: type 'test.Main$CrossClassBPatcher': target 'test.Main$CrossClassB': method '<init>():void': (Main.java:624): ignore
+debug: type 'test.Main$CrossClassBPatcher': target 'test.Main$CrossClassB': method 'go():void': (Main.java:627): wrap
+debug: type 'test.Main$CrossClassCPatcher': (Main.java:0): replace
+debug: type 'test.Main$D': (Main.java:0): edit
+debug: type 'test.Main$D': field 'patchStaticField:int': (Main.java:0): add
+debug: type 'test.Main$D': field 'redefinedSourceStaticField:int': (Main.java:0): edit
+debug: type 'test.Main$D': field 'patchField:int': (Main.java:0): add
+debug: type 'test.Main$D': field 'redefinedSourceField:int': (Main.java:0): edit
+debug: type 'test.Main$D': method '<clinit>():void': (Main.java:290): replace
+debug: type 'test.Main$D': method '<init>():void': (Main.java:316): replace
+debug: type 'test.Main$D': method 'print():void': (Main.java:325): append
+debug: type 'test.Main$E': (Main.java:0): edit
+debug: type 'test.Main$E': field 'patchStaticField:int': (Main.java:0): add
+debug: type 'test.Main$E': field 'redefinedSourceStaticField:int': (Main.java:0): edit
+debug: type 'test.Main$E': field 'patchField:int': (Main.java:0): add
+debug: type 'test.Main$E': field 'redefinedSourceField:int': (Main.java:0): edit
+info: type 'test.Main$E': method '<clinit>():void': (Main.java:338): default add
+debug: type 'test.Main$E': method '<clinit>():void': (Main.java:338): add
+debug: type 'test.Main$E': method '<init>(java.lang.String):void': (Main.java:386): add
+debug: type 'test.Main$E': method '<init>(java.lang.String, java.lang.Void):void': (Main.java:373): edit
+debug: type 'test.Main$E': method '<init>(java.lang.String, java.lang.Void):void': target '<init>(java.lang.String):void': (Main.java:373): 'public' modifier changed to 'private' in renamed method
+debug: type 'test.Main$E': method 'source_static():void': (Main.java:349): edit
+debug: type 'test.Main$E': method 'source_static():void': target '<clinit>': (Main.java:349): 'private' modifier added to renamed method
+debug: type 'test.Main$E': method 'source_static():void': target '<clinit>': (Main.java:349): 'constructor' modifier removed from renamed method
+debug: type 'test.Main$E': method 'print():void': (Main.java:392): append
+debug: type 'test.Main$F': (Main.java:0): edit
+debug: type 'test.Main$F': field 'patchStaticField:int': (Main.java:0): add
+debug: type 'test.Main$F': field 'redefinedSourceStaticField:int': (Main.java:0): edit
+debug: type 'test.Main$F': field 'patchField:int': (Main.java:0): add
+debug: type 'test.Main$F': field 'redefinedSourceField:int': (Main.java:0): edit
+debug: type 'test.Main$F': method '<clinit>():void': (Main.java:403): append
+debug: type 'test.Main$F': method '<init>():void': (Main.java:423): ignore
+debug: type 'test.Main$F': method 'print():void': (Main.java:431): append
+debug: type 'test.Main$G': (Main.java:0): edit
+debug: type 'test.Main$G': field 'patchStaticField:int': (Main.java:0): add
+debug: type 'test.Main$G': field 'redefinedSourceStaticField:int': (Main.java:0): edit
+info: type 'test.Main$G': method '<clinit>():void': (Main.java:450): implicit append of static constructor
+debug: type 'test.Main$G': method '<clinit>():void': (Main.java:450): append
+info: type 'test.Main$G': method '<init>():void': (Main.java:447): implicit ignore of trivial default constructor
+debug: type 'test.Main$G': method '<init>():void': (Main.java:447): ignore
+debug: type 'test.Main$G': method 'print():void': (Main.java:461): append
+debug: type 'test.Main$H': (Main.java:0): edit
+debug: type 'test.Main$H': field 'patchStaticField:int': (Main.java:0): add
+info: type 'test.Main$H': method '<clinit>():void': (Main.java:476): implicit add of static constructor
+debug: type 'test.Main$H': method '<clinit>():void': (Main.java:476): add
+debug: type 'test.Main$H': method '<init>():void': (Main.java:484): ignore
+debug: type 'test.Main$H': method 'print():void': (Main.java:488): append
+debug: type 'test.Main$IdentifierCodes': (Main.java:0): edit
+warning: decode patch: type 'test.Main$IdentifierCodes': field '__bad_$$_invalid$aX1asciiLatin1Escape__': invalid escape sequence '$aX' in '__bad_$$_invalid[->]$aX[<-]1asciiLatin1Escape__'
+debug: type 'test.Main$IdentifierCodes': field '__bad_$$_invalid$aX1asciiLatin1Escape__:int': (Main.java:0): add
+warning: decode patch: type 'test.Main$IdentifierCodes': field '__bad_$$_invalid$p00B1unicodeCodePointEscape__': invalid escape sequence '$p00B1u' in '__bad_$$_invalid[->]$p00B1u[<-]nicodeCodePointEscape__'
+debug: type 'test.Main$IdentifierCodes': field '__bad_$$_invalid$p00B1unicodeCodePointEscape__:int': (Main.java:0): add
+warning: decode patch: type 'test.Main$IdentifierCodes': field '__bad_$$_invalid$p110000unicodeCodePointEscape__': invalid escape sequence '$p110000' in '__bad_$$_invalid[->]$p110000[<-]unicodeCodePointEscape__'
+debug: type 'test.Main$IdentifierCodes': field '__bad_$$_invalid$p110000unicodeCodePointEscape__:int': (Main.java:0): add
+warning: decode patch: type 'test.Main$IdentifierCodes': field '__bad_$$_invalid$sescape__': invalid escape sequence '$s' in '__bad_$$_invalid[->]$s[<-]escape__'
+debug: type 'test.Main$IdentifierCodes': field '__bad_$$_invalid$sescape__:int': (Main.java:0): add
+warning: decode patch: type 'test.Main$IdentifierCodes': field '__bad_$$_invalid$uB1unicodeCodeUnitEscape__': invalid escape sequence '$uB1u' in '__bad_$$_invalid[->]$uB1u[<-]nicodeCodeUnitEscape__'
+debug: type 'test.Main$IdentifierCodes': field '__bad_$$_invalid$uB1unicodeCodeUnitEscape__:int': (Main.java:0): add
+warning: decode patch: type 'test.Main$IdentifierCodes': field '__bad_$$_invalid_character__': invalid character '_' in '__bad_$$_invalid[->]_[<-]character__'
+debug: type 'test.Main$IdentifierCodes': field '__bad_$$_invalid_character__:int': (Main.java:0): add
+warning: decode patch: type 'test.Main$IdentifierCodes': field '__bad_$$_noEndMark_': missing end of code in '__bad[->]_$$_noEndMark_[<-]'
+debug: type 'test.Main$IdentifierCodes': field '__bad_$$_noEndMark_:int': (Main.java:0): add
+warning: decode patch: type 'test.Main$IdentifierCodes': field '__bad_$$_truncatedAsciiLatin1Escape$aB__': invalid escape sequence '$aB' in '__bad_$$_truncatedAsciiLatin1Escape[->]$aB[<-]__'
+debug: type 'test.Main$IdentifierCodes': field '__bad_$$_truncatedAsciiLatin1Escape$aB__:int': (Main.java:0): add
+warning: decode patch: type 'test.Main$IdentifierCodes': field '__bad_$$_truncatedEscape$__': invalid escape sequence '$' in '__bad_$$_truncatedEscape[->]$[<-]__'
+debug: type 'test.Main$IdentifierCodes': field '__bad_$$_truncatedEscape$__:int': (Main.java:0): add
+warning: decode patch: type 'test.Main$IdentifierCodes': field '__bad_$$_truncatedUnicodeCodePointEscape$p00B1__': invalid escape sequence '$p00B1' in '__bad_$$_truncatedUnicodeCodePointEscape[->]$p00B1[<-]__'
+debug: type 'test.Main$IdentifierCodes': field '__bad_$$_truncatedUnicodeCodePointEscape$p00B1__:int': (Main.java:0): add
+warning: decode patch: type 'test.Main$IdentifierCodes': field '__bad_$$_truncatedUnicodeCodeUnitEscape$uB1__': invalid escape sequence '$uB1' in '__bad_$$_truncatedUnicodeCodeUnitEscape[->]$uB1[<-]__'
+debug: type 'test.Main$IdentifierCodes': field '__bad_$$_truncatedUnicodeCodeUnitEscape$uB1__:int': (Main.java:0): add
+warning: decode patch: type 'test.Main$IdentifierCodes': field '__bad_emptyCode_$$__': empty code in '__bad_emptyCode[->]_$$__[<-]'
+debug: type 'test.Main$IdentifierCodes': field '__bad_emptyCode_$$__:int': (Main.java:0): add
+warning: decode patch: type 'test.Main$IdentifierCodes': field '_bad_$$_noStartMark__': missing start of code in '[->]_bad_$$_[<-]noStartMark__'
+debug: type 'test.Main$IdentifierCodes': field '_bad_$$_noStartMark__:int': (Main.java:0): add
+info: type 'test.Main$IdentifierCodes': method '<init>():void': (Main.java:660): implicit ignore of trivial default constructor
+debug: type 'test.Main$IdentifierCodes': method '<init>():void': (Main.java:660): ignore
+debug: decode patch: type 'test.Main$IdentifierCodes': method '__$$_withoutLabel__': decoded to 'withoutLabel'
+debug: type 'test.Main$IdentifierCodes': method 'withoutLabel():void': (Main.java:710): add
+debug: decode patch: type 'test.Main$IdentifierCodes': method '__ok_$$_with$SdollarEscape__': decoded to 'with$dollarEscape'
+debug: type 'test.Main$IdentifierCodes': method 'with$dollarEscape():void': (Main.java:711): add
+debug: decode patch: type 'test.Main$IdentifierCodes': method '__ok_$$_with$UunderscoreEscape__': decoded to 'with_underscoreEscape'
+debug: type 'test.Main$IdentifierCodes': method 'with_underscoreEscape():void': (Main.java:712): add
+debug: decode patch: type 'test.Main$IdentifierCodes': method '__ok_$$_with$aB1asciiLatin1Escape__': decoded to 'with±asciiLatin1Escape'
+debug: type 'test.Main$IdentifierCodes': method 'with±asciiLatin1Escape():void': (Main.java:713): add
+debug: decode patch: type 'test.Main$IdentifierCodes': method '__ok_$$_with$p0000B1unicodeCodePointEscape__': decoded to 'with±unicodeCodePointEscape'
+debug: type 'test.Main$IdentifierCodes': method 'with±unicodeCodePointEscape():void': (Main.java:715): add
+debug: decode patch: type 'test.Main$IdentifierCodes': method '__ok_$$_with$u00B1unicodeCodeUnitEscape__': decoded to 'with±unicodeCodeUnitEscape'
+debug: type 'test.Main$IdentifierCodes': method 'with±unicodeCodeUnitEscape():void': (Main.java:714): add
+warning: decode patch: type 'test.Main$IdentifierCodes': method '__prefix_$$_1____bad_infix_$$_$2__and__postfix_$$_3__': invalid escape sequence '$2' in '__bad_infix_$$_[->]$2[<-]__'
+debug: decode patch: type 'test.Main$IdentifierCodes': method '__prefix_$$_1____bad_infix_$$_$2__and__postfix_$$_3__': decoded to '1__bad_infix_$$_$2__and3'
+debug: type 'test.Main$IdentifierCodes': method '1__bad_infix_$$_$2__and3():void': (Main.java:735): add
+debug: decode patch: type 'test.Main$IdentifierCodes': method '__prefix_$$_1____infix_$$_2__and__postfix_$$_3__': decoded to '12and3'
+debug: type 'test.Main$IdentifierCodes': method '12and3():void': (Main.java:716): add
+debug: type 'test.Main$IdentifierCodes': method 'print():void': (Main.java:740): replace
+debug: type 'test.Main$Interface': (Main.java:0): ignore
+debug: type 'test.Main$TargetedClassPatcher': (Main.java:0): edit
+debug: map source: type 'test.Main$ObfuscatedClassForTargeting': field 'obfuscatedField:int': mapped to 'field'
+debug: map source: type 'test.Main$ObfuscatedClassForTargeting': field 'obfuscatedFieldForTargeting:int': mapped to 'targetedField'
+debug: type 'test.Main$TargetedClassPatcher': target 'test.Main$TargetedClass': field 'field:int': (Main.java:0): remove
+debug: type 'test.Main$TargetedClassPatcher': target 'test.Main$TargetedClass': field 'source_targetedField:int': (Main.java:0): remove
+debug: map source: type 'test.Main$ObfuscatedClassForTargeting': method 'obfuscatedMethod():void': mapped to 'method'
+debug: map source: type 'test.Main$ObfuscatedClassForTargeting': method 'obfuscatedMethodForTargeting():void': mapped to 'targetedMethod'
+debug: map source: type 'test.Main$ObfuscatedClassForTargeting': method 'obfuscatedMethodWithArg(test.Main$ObfuscatedClassForTargeting):void': mapped to 'methodWithArg'
+info: type 'test.Main$TargetedClassPatcher': target 'test.Main$TargetedClass': method '<init>():void': (Main.java:873): implicit ignore of trivial default constructor
+debug: type 'test.Main$TargetedClassPatcher': target 'test.Main$TargetedClass': method '<init>():void': (Main.java:873): ignore
+debug: type 'test.Main$TargetedClassPatcher': target 'test.Main$TargetedClass': method 'source_targetedMethod():void': (Main.java:891): edit
+debug: type 'test.Main$TargetedClassPatcher': target 'test.Main$TargetedClass': method 'source_targetedMethod():void': target 'targetedMethod': (Main.java:891): 'public' modifier changed to 'private' in renamed method
+debug: type 'test.Main$TargetedClassPatcher': target 'test.Main$TargetedClass': method 'method():void': (Main.java:877): replace
+debug: type 'test.Main$TargetedClassPatcher': target 'test.Main$TargetedClass': method 'methodWithArg(test.Main$TargetedClass):void': (Main.java:879): replace
+debug: type 'test.Main$TargetedClassPatcher': target 'test.Main$TargetedClass': method 'targetedMethod():void': (Main.java:894): add
+debug: type 'test.Main$Thing': (Main.java:0): edit
+debug: map source: type 'test.Main$ObfuscatedThing': field 'obfuscatedField:int': mapped to 'field'
+debug: map source: type 'test.Main$ObfuscatedThing': field 'obfuscatedFieldForTargeting:int': mapped to 'targetedField'
+debug: type 'test.Main$Thing': field 'field:int': (Main.java:0): ignore
+debug: type 'test.Main$Thing': field 'source_targetedField:int': (Main.java:0): remove
+debug: map source: type 'test.Main$ObfuscatedThing': method 'obfuscatedMethod():void': mapped to 'someMethod'
+debug: map source: type 'test.Main$ObfuscatedThing': method 'obfuscatedMethod2(int, java.lang.String, java.lang.Object[]):float[][]': mapped to 'anotherMethodWithArgs'
+debug: map source: type 'test.Main$ObfuscatedThing': method 'obfuscatedMethodForTargeting():void': mapped to 'targetedMethod'
+debug: map source: type 'test.Main$ObfuscatedThing': method 'yetAnotherObfuscatedMethod(test.Main$ObfuscatedThing[]):void': mapped to 'makeFriendsWithOtherThings'
+info: type 'test.Main$Thing': method '<init>():void': (Main.java:836): implicit ignore of trivial default constructor
+debug: type 'test.Main$Thing': method '<init>():void': (Main.java:836): ignore
+debug: type 'test.Main$Thing': method 'source_targetedMethod():void': (Main.java:856): edit
+debug: type 'test.Main$Thing': method 'source_targetedMethod():void': target 'targetedMethod': (Main.java:856): 'public' modifier changed to 'private' in renamed method
+debug: type 'test.Main$Thing': method 'anotherMethodWithArgs(int, java.lang.String, java.lang.Object[]):float[][]': (Main.java:842): replace
+debug: type 'test.Main$Thing': method 'makeFriendsWithOtherThings(test.Main$Thing[]):void': (Main.java:844): replace
+debug: type 'test.Main$Thing': method 'print():void': (Main.java:864): prepend
+debug: type 'test.Main$Thing': method 'someMethod():void': (Main.java:840): replace
+debug: type 'test.Main$Thing': method 'targetedMethod():void': (Main.java:859): add
+debug: type 'test.Main$User': (Main.java:0): edit
+debug: map source: type 'test.Main$ObfuscatedDbRecord': field 'obfuscatedParentRecord:test.Main$ObfuscatedDbRecord': mapped to 'parentUser'
+debug: type 'test.Main$User': field 'parentUser:test.Main$User': (Main.java:0): remove
+debug: map source: type 'test.Main$ObfuscatedDbRecord': method 'obfuscatedGet(java.lang.String):test.Main$ObfuscatedDbRecord': mapped to 'get'
+debug: map source: type 'test.Main$ObfuscatedDbRecord': method 'obfuscatedGetAllRecords():test.Main$ObfuscatedDbRecord[]': mapped to 'getAllUsers'
+debug: map source: type 'test.Main$ObfuscatedDbRecord': method 'obfuscatedPut(test.Main$ObfuscatedDbRecord):java.lang.String': mapped to 'put'
+info: type 'test.Main$User': method '<init>():void': (Main.java:904): implicit ignore of trivial default constructor
+debug: type 'test.Main$User': method '<init>():void': (Main.java:904): ignore
+debug: type 'test.Main$User': method 'get(java.lang.String):test.Main$User': (Main.java:908): replace
+debug: type 'test.Main$User': method 'getAllUsers():test.Main$User[]': (Main.java:910): replace
+debug: type 'test.Main$User': method 'put(test.Main$User):java.lang.String': (Main.java:906): replace
+debug: decode patch: type 'test.Main$__My_label_for_this_class_$$_IllegalName__': decoded to 'test.Main$IllegalName'
+debug: decode patch: annotation element value '__My_label_for_this_class_$$_IllegalName__': decoded to 'IllegalName'
+debug: type 'test.Main$IllegalName': (Main.java:0): edit
+info: type 'test.Main$IllegalName': method '<init>():void': (Main.java:653): implicit ignore of trivial default constructor
+debug: type 'test.Main$IllegalName': method '<init>():void': (Main.java:653): ignore
+debug: decode patch: type 'test.Main$__My_label_for_this_class_$$_IllegalName__': method '__my_label_for_this_method_$$_illegalName__': decoded to 'illegalName'
+debug: type 'test.Main$IllegalName': method 'illegalName():void': (Main.java:655): replace
+debug: type 'test.Main$source_CrossClassA': (Main.java:0): edit
+debug: type 'test.Main$source_CrossClassA': target 'test.Main$CrossClassA': (Main.java:0): 'public' modifier removed from renamed type
+debug: type 'test.Main$source_CrossClassA': target 'test.Main$CrossClassA': method '<init>(java.lang.String):void': (Main.java:585): ignore
+debug: type 'test.Main$source_CrossClassA': target 'test.Main$CrossClassA': method 'go():void': (Main.java:587): ignore
+debug: type 'test.Main': (Main.java:0): ignore
+debug: type 'test.info.package-info': (package-info.java:0): replace
+debug: type 'test.info.package-info': (package-info.java:0): replace package non-recursive
+debug: type 'test.info.package-info': (package-info.java:0): remove type 'test.info.package-info'
+debug: type 'test.rec.Rec': (Rec.java:0): add
+debug: type 'test.rec.inner.RecInner': (RecInner.java:0): add
+debug: type 'test.rec.package-info': (package-info.java:0): remove
+debug: type 'test.rec.package-info': (package-info.java:0): remove package recursive
+debug: type 'test.rec.package-info': (package-info.java:0): remove type 'test.rec.Rec'
+debug: type 'test.rec.package-info': (package-info.java:0): remove type 'test.rec.inner.RecInner'
+debug: type 'test.target.package-info': (package-info.java:0): remove
+debug: type 'test.target.package-info': target 'test.nonrec.package-info': (package-info.java:0): remove package non-recursive
+debug: type 'test.target.package-info': target 'test.nonrec.package-info': (package-info.java:0): remove type 'test.nonrec.NonRec'
+debug: type 'test.Main$Concrete1': (Main.java:0): edit
+info: type 'test.Main$Concrete1': method '<init>():void': (Main.java:517): implicit ignore of trivial default constructor
+debug: type 'test.Main$Concrete1': method '<init>():void': (Main.java:517): ignore
+debug: type 'test.Main$Concrete1': method 'abstractMethod():void': (Main.java:0): ignore
+debug: type 'test.Main$Concrete1': method 'interfaceMethod():void': (Main.java:526): ignore
+debug: type 'test.Main$Concrete1': method 'method():void': (Main.java:520): replace
+debug: type 'test.Main$Concrete2': (Main.java:0): edit
+info: type 'test.Main$Concrete2': method '<init>():void': (Main.java:554): implicit ignore of trivial default constructor
+debug: type 'test.Main$Concrete2': method '<init>():void': (Main.java:554): ignore
+debug: type 'test.Main$Concrete2': method 'method():void': (Main.java:557): replace
+debug: type 'test.Main$Derived': (Main.java:0): edit
+info: type 'test.Main$Derived': method '<init>():void': (Main.java:227): default ignore
+debug: type 'test.Main$Derived': method '<init>():void': (Main.java:227): ignore
+debug: type 'test.Main$Derived': method 'source_method():void': (Main.java:234): edit
+debug: type 'test.Main$Derived': method 'source_method():void': target 'method': (Main.java:234): 'public' modifier changed to 'private' in renamed method
+debug: type 'test.Main$Derived': method 'method():void': (Main.java:237): add
+debug: reanonymize output: type 'test.Main$AnonymousClasses$Anon1$Anon1_Level2': reanonymized to 'test.Main$AnonymousClasses$1$1'
+debug: reanonymize output: type 'test.Main$AnonymousClasses$Anon1$Anon1_Level2$Inner': reanonymized to 'test.Main$AnonymousClasses$1$1$Inner'
+debug: reanonymize output: type 'test.Main$AnonymousClasses$Anon1': reanonymized to 'test.Main$AnonymousClasses$1'
+debug: reanonymize output: type 'test.Main$AnonymousClasses$Anon1_Level2': reanonymized to 'test.Main$AnonymousClasses$Anon1'
+debug: reanonymize output: type 'test.Main$AnonymousClasses$Anon1_Level2$Anon1_Level2': reanonymized to 'test.Main$AnonymousClasses$Anon1$1'
+debug: reanonymize output: type 'test.Main$AnonymousClasses$Anon1_Level2$Anon1_Level4': reanonymized to 'test.Main$AnonymousClasses$Anon1$Anon1_Level2'
+warning: reanonymize output: type 'test.Main$AnonymousClasses$42': cannot reanonymize 'Main$AnonymousClasses$42' by 1 level
+debug: encode source: annotation element value 'Double_$$_Encoding': escaped to 'Double__$$_$U__$$_Encoding'
+debug: encode source: type 'test.Main$Double_$$_Encoding': field 'field_$$_': escaped to 'field__$$_$U__$$_'
+debug: encode source: type 'test.Main$Double_$$_Encoding': method 'method_$$_': escaped to 'method__$$_$U__$$_'
+debug: encode source: type 'test.Main$HintOnParentOBF': field 'grandparentOBF:test.Main$HintOnGrandparentOBF': encoded to '__f_H_HashMap_$$_grandparentOBF__'
+debug: encode source: type 'test.Main$HintOnParentOBF': field 'noHintOBF:test.Main$HintOnParentOBF$InnerOBF': encoded to '__f_$$_noHintOBF__'
+debug: encode source: type 'test.Main$HintOnParentOBF': field 'parentInterfaceOBF:test.Main$HintOnParentInterfaceOBF': encoded to '__f_H_Iterable_Runnable_$$_parentInterfaceOBF__'
+debug: encode source: type 'test.Main$HintOnParentOBF': field 'runnableOBF:java.lang.Runnable': encoded to '__f_H_Runnable_$$_runnableOBF__'
+debug: encode source: type 'test.Main$HintOnParentOBF': field 'stringOBF:java.lang.String': encoded to '__f_H_String_$$_stringOBF__'
+debug: encode source: type 'test.Main$HintOnParentOBF': method 'methodOBF():java.lang.String': encoded to '__m_H_String_$$_methodOBF__'
+debug: encode source: type 'test.Main$NonAsciiCharacters$AnimalesAutóctonos': field 'pingüino:test.Main$NonAsciiCharacters$AnimalesAutóctonos': encoded to '__f_$$_ping$aFCino__'
+debug: encode source: type 'test.Main$NonAsciiCharacters$AnimalesAutóctonos': field 'yacaré:test.Main$NonAsciiCharacters$AnimalesAutóctonos': encoded to '__f_$$_yacar$aE9__'
+debug: encode source: type 'test.Main$NonAsciiCharacters$AnimalesAutóctonos': field 'ñandú:test.Main$NonAsciiCharacters$AnimalesAutóctonos': encoded to '__f_$$_$aF1and$aFA__'
+debug: encode source: type 'test.Main$NonAsciiCharacters': field 'ΑΠΟΛΛΩΝ:java.lang.String': encoded to '__f_$$_$u0391$u03A0$u039F$u039B$u039B$u03A9$u039D__'
+debug: encode source: type 'test.Main$NonAsciiCharacters': field '𝒩𝒪:boolean': encoded to '__f_$$_$p01D4A9$p01D4AA__'
+debug: encode source: type 'test.Main$ObfuscatedClassForEncodingWithMap': field 'obfuscatedField:int': encoded to '__f_field_$$_obfuscatedField__'
+debug: encode source: type 'test.Main$ObfuscatedClassForEncodingWithMap': method 'obfuscatedMethod():void': encoded to '__m_method_$$_obfuscatedMethod__'
+debug: encode source: type 'test.Main$ObfuscatedClassForEncodingWithMap': method 'obfuscatedMethodWithArg(test.Main$ObfuscatedClassForEncodingWithMap):void': encoded to '__m_methodWithArg_$$_obfuscatedMethodWithArg__'
+debug: unmap output: type 'test.Main$TargetedClass': unmapped to 'test.Main$ObfuscatedClassForTargeting'
+debug: unmap output: type 'test.Main$TargetedClass': method 'method():void': unmapped to 'obfuscatedMethod'
+debug: unmap output: type 'test.Main$TargetedClass': method 'targetedMethod():void': unmapped to 'obfuscatedMethodForTargeting'
+debug: unmap output: type 'test.Main$TargetedClass': method 'methodWithArg(test.Main$TargetedClass):void': unmapped to 'obfuscatedMethodWithArg'
+debug: unmap output: type 'test.Main$User': unmapped to 'test.Main$ObfuscatedDbRecord'
+debug: unmap output: type 'test.Main$User': method 'get(java.lang.String):test.Main$User': unmapped to 'obfuscatedGet'
+debug: unmap output: type 'test.Main$User': method 'getAllUsers():test.Main$User[]': unmapped to 'obfuscatedGetAllRecords'
+debug: unmap output: type 'test.Main$User': method 'put(test.Main$User):java.lang.String': unmapped to 'obfuscatedPut'
+debug: unmap output: type 'test.Main$Thing': unmapped to 'test.Main$ObfuscatedThing'
+debug: unmap output: type 'test.Main$Thing': field 'field:int': unmapped to 'obfuscatedField'
+debug: unmap output: type 'test.Main$Thing': method 'someMethod():void': unmapped to 'obfuscatedMethod'
+debug: unmap output: type 'test.Main$Thing': method 'anotherMethodWithArgs(int, java.lang.String, java.lang.Object[]):float[][]': unmapped to 'obfuscatedMethod2'
+debug: unmap output: type 'test.Main$Thing': method 'makeFriendsWithOtherThings(test.Main$Thing[]):void': unmapped to 'yetAnotherObfuscatedMethod'
+debug: unmap output: type 'test.Main$Thing': method 'targetedMethod():void': unmapped to 'obfuscatedMethodForTargeting'
+info: write 'build/patched.dex'
+debug: write 'build/patched.dex': dex version '035'
+debug: write 'build/patched.dex': 50 types
+0 error(s), 17 warning(s)
+
+$ sha1sum build/patched.dex
+2a2a82b4cffec4dfe7adfcce50b3994268463af4  build/patched.dex
+
+$ sha1sum build/template-mapping.txt
+db26f46a332c23c7867ef8b39547a031c46e4443  build/template-mapping.txt
+
+$ dexpatcher build/source.dex.zip build/patch.dex.zip --output build/patched-release.dex --unmap-patches --map mapping.txt --compose-map compose-mapping.txt --encode-source --encode-map encode-mapping.txt --escape-non-ascii --encode-reserved-chars --encode-obfuscated-classes --obfuscated-classes .\*OBF --encode-class-hints --encode-obfuscated-members --obfuscated-members .\*OBF --encode-member-hints --reanon-patches --main-plan Anon\[_Level\] --deanon-patches-alt --no-reanon-errors --decode-patches --no-decode-errors --quiet
+DexPatcher version 1.8.0-beta1 by Lanchon (https://dexpatcher.github.io/)
+0 error(s), 17 warning(s)
+
+$ cmp --quiet build/patched.dex build/patched-release.dex
+
+$ dex2jar --force --output build/patched-dex2jar.jar build/patched.dex
+dex2jar build/patched.dex -> build/patched-dex2jar.jar
+WARN: ignored invalid inner class name , treat as anonymous inner class.
+WARN: ignored invalid inner class name , treat as anonymous inner class.
+WARN: ignored invalid inner class name , treat as anonymous inner class.
+
+--- run source/build/libs/source.jar ---
+original A::<clinit>
+original A::<init>
+
+B::privateStaticMethod: 42 (private static void test.Main$B.privateStaticMethod(int))
+B::privateKey: my-key (private java.lang.String test.Main$B.privateKey)
+original B::directMethod
+original B::virtualMethod: data
+original B::wrapTestMethod: data
+original B::prependTestMethod: data
+original B::appendTestMethod: data
+
+entering original Derived::method
+original Base::method
+exiting original Derived::method
+
+original C::<clinit>
+original C::<init>
+C::sourceStaticField: 100
+C::sourceField: 100
+C::redefinedSourceStaticField: 100
+C::redefinedSourceField: 100
+
+original D::<clinit>
+original D::<init>
+D::sourceStaticField: 100
+D::sourceField: 100
+D::redefinedSourceStaticField: 100
+D::redefinedSourceField: 100
+
+original E::<clinit>
+original E::<init>: data
+E::sourceStaticField: 100
+E::sourceField: 100
+E::redefinedSourceStaticField: 100
+E::redefinedSourceField: 100
+
+original F::<clinit>
+original F::<init>
+F::sourceStaticField: 100
+F::sourceField: 100
+F::redefinedSourceStaticField: 100
+F::redefinedSourceField: 100
+
+original G::<clinit>
+original G::<init>
+G::sourceStaticField: 100
+G::redefinedSourceStaticField: 100
+
+original H::<init>
+
+Concrete1::interfaceMethod
+Concrete1::abstractMethod
+original Concrete1::method
+
+Concrete2::interfaceMethod
+Concrete2::abstractMethod
+original Concrete2::method
+
+Concrete3::interfaceMethod
+Concrete3::abstractMethod
+original Concrete3::method
+
+original CrossClassA::go: data
+original CrossClassA::help1
+original CrossClassAHelper::help2(CrossClassA)
+
+original CrossClassB::go: data
+
+original CrossClassC::<clinit>
+original CrossClassC::<init>
+
+original IllegalName::<init>
+original IllegalName::illegalName
+
+original IdentifierCodes::print
+
+original AnonymousClasses$1::run
+original AnonymousClasses$1$1::run
+original AnonymousClasses$Anon1::go
+
+ObfuscatedThing::obfuscatedField: 0
+original ObfuscatedThing::obfuscatedMethod
+original ObfuscatedThing::obfuscatedMethod2
+original ObfuscatedThing::yetAnotherObfuscatedMethod
+original ObfuscatedThing::obfuscatedMethodForTargeting
+
+original ObfuscatedClassForTargeting::obfuscatedMethod
+original ObfuscatedClassForTargeting::obfuscatedMethodWithArg
+original ObfuscatedClassForTargeting::obfuscatedMethodForTargeting
+
+original ObfuscatedDbRecord::obfuscatedPut
+original ObfuscatedDbRecord::obfuscatedGet
+original ObfuscatedDbRecord::obfuscatedGetAllRecords
+
+original ObfuscatedClassForEncodingWithMap::obfuscatedMethod
+original ObfuscatedClassForEncodingWithMap::obfuscatedMethodWithArg
+
+original Double_$$_Encoding::method_$$_
+
+--- end source/build/libs/source.jar ---
+
+--- run build/patched-dex2jar.jar ---
+replaced A::<clinit>
+replaced A::<init>
+
+B::privateStaticMethod: 42 (public static void test.Main$B.privateStaticMethod(int))
+B::privateKey: my-key (public java.lang.String test.Main$B.privateKey)
+replaced B::directMethod
+B::staticField: 100   <-- initialized
+B::instanceField: 0   <-- *not* initialized
+B::addedMethod
+entering replaced B::virtualMethod: data
+original B::virtualMethod: filtered data
+exiting replaced B::virtualMethod
+entering wrapper B::wrapTestMethod: data
+original B::wrapTestMethod: filtered data
+exiting wrapper B::wrapTestMethod
+prepended B::prependTestMethod: data
+original B::prependTestMethod: data
+original B::appendTestMethod: data
+appended B::appendTestMethod: data
+
+entering replaced Derived::method
+entering original Derived::method
+original Base::method
+exiting original Derived::method
+exiting replaced Derived::method
+
+original C::<clinit>
+original C::<init>
+C::sourceStaticField: 100
+C::sourceField: 100
+C::redefinedSourceStaticField: 100
+C::redefinedSourceField: 100
+C::patchStaticField: 0
+C::patchField: 0
+
+replaced D::<clinit>
+replaced D::<init>
+D::sourceStaticField: 0
+D::sourceField: 0
+D::redefinedSourceStaticField: 200
+D::redefinedSourceField: 200
+D::patchStaticField: 200
+D::patchField: 200
+
+entering replaced E::<clinit>
+original E::<clinit>
+exiting replaced E::<clinit>
+original E::<init>: filtered data
+continuing on replaced E::<init>: data
+E::sourceStaticField: 100
+E::sourceField: 100
+E::redefinedSourceStaticField: 100
+E::redefinedSourceField: 100
+E::patchStaticField: 200
+E::patchField: 0
+
+original F::<clinit>
+appended F::<clinit>
+original F::<init>
+F::sourceStaticField: 100
+F::sourceField: 100
+F::redefinedSourceStaticField: 200
+F::redefinedSourceField: 100
+F::patchStaticField: 200
+F::patchField: 0
+
+original G::<clinit>
+appended G::<clinit>
+original G::<init>
+G::sourceStaticField: 100
+G::redefinedSourceStaticField: 200
+G::patchStaticField: 200
+
+added H::<clinit>
+original H::<init>
+H::patchStaticField: 200
+
+Concrete1::interfaceMethod
+Concrete1::abstractMethod
+replaced Concrete1::method
+
+Concrete2::interfaceMethod
+Concrete2::abstractMethod
+replaced Concrete2::method
+
+Concrete3::interfaceMethod
+Concrete3::abstractMethod
+replaced Concrete3::method
+
+entering replaced CrossClassA::go
+original source_CrossClassA::go: filtered data for a1
+original source_CrossClassA::help1
+added CrossClassAHelper::help2(source_CrossClassA)
+original source_CrossClassA::go: filtered data for a2
+original source_CrossClassA::help1
+added CrossClassAHelper::help2(source_CrossClassA)
+exiting replaced CrossClassA::go
+
+entering wrapper CrossClassB::go (originally in CrossClassBPatcher)
+original CrossClassB::go: data
+exiting wrapper CrossClassB::go (originally in CrossClassBPatcher)
+
+replaced CrossClassC::<clinit> (originally in CrossClassCPatcher)
+replaced CrossClassC::<init> (originally in CrossClassCPatcher)
+
+original IllegalName::<init>
+replaced IllegalName::illegalName
+
+added IdentifierCodes::withoutLabel
+added IdentifierCodes::with$dollarEscape
+added IdentifierCodes::with_underscoreEscape
+added IdentifierCodes::with±asciiLatin1Escape
+added IdentifierCodes::with±unicodeCodeUnitEscape
+added IdentifierCodes::with±unicodeCodePointEscape
+added IdentifierCodes::12and3
+added IdentifierCodes::1__bad_infix_$$_$2__and3
+
+original AnonymousClasses$1::run
+replaced AnonymousClasses::<anon>::<anon>::run
+original AnonymousClasses$Anon1::go
+added class AnonymousClasses$1_patch
+
+ObfuscatedThing::obfuscatedField: 42
+replaced ObfuscatedThing::obfuscatedMethod
+replaced ObfuscatedThing::obfuscatedMethod2
+replaced ObfuscatedThing::yetAnotherObfuscatedMethod
+entering replaced ObfuscatedThing::obfuscatedMethodForTargeting
+original ObfuscatedThing::source_targetedMethod
+exiting replaced ObfuscatedThing::obfuscatedMethodForTargeting
+
+replaced ObfuscatedClassForTargeting::obfuscatedMethod
+replaced ObfuscatedClassForTargeting::obfuscatedMethodWithArg
+entering replaced ObfuscatedClassForTargeting::obfuscatedMethodForTargeting
+original ObfuscatedClassForTargeting::source_targetedMethod
+exiting replaced ObfuscatedClassForTargeting::obfuscatedMethodForTargeting
+
+replaced ObfuscatedDbRecord::obfuscatedPut
+replaced ObfuscatedDbRecord::obfuscatedGet
+replaced ObfuscatedDbRecord::obfuscatedGetAllRecords
+
+original __C1_EncodedClass_$$_ObfuscatedClassForEncodingWithMap__::__m_method_$$_obfuscatedMethod__
+original __C1_EncodedClass_$$_ObfuscatedClassForEncodingWithMap__::__m_methodWithArg_$$_obfuscatedMethodWithArg__
+
+original Double__$$_$U__$$_Encoding::method__$$_$U__$$_
+
+--- end build/patched-dex2jar.jar ---
+

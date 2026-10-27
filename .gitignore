@@ -1,0 +1,12 @@
+/.gradle/
+/.idea/workspace.xml
+/.idea/libraries
+
+/build/
+/annotation/build/
+/tool/build/
+/test/build/
+/test/source/build/
+/test/patch/build/
+
+/gradle.properties

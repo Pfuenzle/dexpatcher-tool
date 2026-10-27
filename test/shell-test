@@ -1,0 +1,84 @@
+#!/bin/bash
+
+set -e
+
+source shell-test.config
+
+run() {
+    echo -n "\$"
+    printf " %q" "$@"
+    echo
+    "run-$@"
+    local ret="$?"
+    echo
+    return "$ret"
+}
+
+dex-jar() {
+    name="$1"
+    jar=$name/build/libs/$name.jar
+    dex=build/$name.dex.zip
+    run d8 --no-desugaring --output $dex $jar
+    #run dex2jar --force --output $name-dex2jar.jar $dex
+}
+
+cat-file() {
+    file="$1"
+    echo "--- cat $file ---"
+    cat $file
+    echo "--- end $file ---"
+    echo
+}
+
+run-jar() {
+    jar="$1"
+    echo "--- run $jar ---"
+    run-java -cp $jar test.Main
+    echo "--- end $jar ---"
+    echo
+}
+
+mkdir -p build
+
+dex-jar source
+dex-jar patch
+
+run dexpatcher --help
+run dexpatcher build/source.dex.zip build/patch.dex.zip --output build/patched.dex\
+ --create-map build/template-mapping.txt\
+ --map-source --unmap-output --map mapping.txt --compose-map compose-mapping.txt\
+ --encode-source --encode-map encode-mapping.txt --escape-non-ascii --encode-reserved-chars\
+   --encode-obfuscated-classes --obfuscated-classes '.*OBF' --encode-class-hints\
+   --encode-obfuscated-members --obfuscated-members '.*OBF' --encode-member-hints\
+ --deanon-source --reanon-output --main-plan Anon[_Level] --deanon-patches-alt --no-reanon-errors\
+ --decode-patches --no-decode-errors\
+ --debug "$@"
+
+run sha1sum build/patched.dex
+
+#cat-file build/template-mapping.txt
+run sha1sum build/template-mapping.txt
+
+if "$RUN_RELEASE_PATCH_TEST"; then
+
+run dexpatcher build/source.dex.zip build/patch.dex.zip --output build/patched-release.dex\
+ --unmap-patches --map mapping.txt --compose-map compose-mapping.txt\
+ --encode-source --encode-map encode-mapping.txt --escape-non-ascii --encode-reserved-chars\
+   --encode-obfuscated-classes --obfuscated-classes '.*OBF' --encode-class-hints\
+   --encode-obfuscated-members --obfuscated-members '.*OBF' --encode-member-hints\
+ --reanon-patches --main-plan Anon[_Level] --deanon-patches-alt --no-reanon-errors\
+ --decode-patches --no-decode-errors\
+ --quiet "$@"
+
+#run sha1sum build/patched-release.dex
+run cmp --quiet build/patched.dex build/patched-release.dex || {
+    echo "error: patched-release.dex differs from patched.dex"
+    exit 1
+}
+
+fi
+
+run dex2jar --force --output build/patched-dex2jar.jar build/patched.dex
+
+run-jar source/build/libs/source.jar
+run-jar build/patched-dex2jar.jar

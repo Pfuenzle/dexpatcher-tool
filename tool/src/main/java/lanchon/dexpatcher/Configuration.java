@@ -1,0 +1,84 @@
+/*
+ * DexPatcher - Copyright 2015-2020 Rodrigo Balerdi
+ * (GNU General Public License version 3 or later)
+ *
+ * DexPatcher is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ */
+
+package lanchon.dexpatcher;
+
+import java.util.Collections;
+
+import lanchon.dexpatcher.Processor.PreTransform;
+import lanchon.dexpatcher.core.Context;
+import lanchon.dexpatcher.core.logger.Logger;
+import lanchon.dexpatcher.transform.anonymizer.TypeAnonymizer;
+import lanchon.dexpatcher.transform.codec.StringCodec;
+import lanchon.dexpatcher.transform.codec.encoder.EncoderConfiguration;
+import lanchon.multidexlib2.DexIO;
+
+public class Configuration {
+
+	public String sourceFile;
+	public Iterable<String> patchFiles = Collections.emptyList();
+
+	public int apiLevel;
+
+	public boolean multiDex;
+	public int multiDexJobs = 1;
+
+	public int maxDexPoolSize = DexIO.DEFAULT_MAX_DEX_POOL_SIZE;
+
+	public String annotationPackage = Context.DEFAULT_ANNOTATION_PACKAGE;
+	public boolean constructorAutoIgnoreDisabled;
+
+	public String patchedFile;
+	public String templateMapFile;
+	public boolean dryRun;
+
+	public Logger.Level logLevel = Context.DEFAULT_LOG_LEVEL;
+
+	public String sourceCodeRoot;
+	public boolean timingStats;
+
+	// Code transform options:
+
+	public boolean mapSource;
+	public boolean deanonSource;
+	public boolean deanonSourceAlternate;
+	public boolean encodeSource;
+	public boolean decodeSource;
+	public boolean reanonSource;
+	public boolean unmapSource;
+
+	public boolean deanonPatches;
+	public boolean deanonPatchesAlternate;
+	public boolean decodePatches;
+	public boolean reanonPatches;
+	public boolean unmapPatches;
+
+	public boolean decodeOutput;
+	public boolean reanonOutput;
+	public boolean unmapOutput;
+
+	public Iterable<String> mapFiles;
+	public boolean invertMap;
+	public Iterable<String> composeMapFiles;
+	public boolean invertComposeMap;
+
+	public String mainAnonymizationPlan = TypeAnonymizer.DEFAULT_MAIN_ANONYMIZATION_PLAN;
+	public String alternateAnonymizationPlan = TypeAnonymizer.DEFAULT_ALTERNATE_ANONYMIZATION_PLAN;
+	public boolean treatReanonymizeErrorsAsWarnings;
+
+	public String codeMarker = StringCodec.DEFAULT_CODE_MARKER;
+	public Iterable<String> encodeMapFiles;
+	public boolean invertEncodeMap;
+	public EncoderConfiguration encoderConfiguration = new EncoderConfiguration();
+	public boolean treatDecodeErrorsAsWarnings;
+
+	public PreTransform preTransform = Processor.DEFAULT_PRE_TRANSFORM;
+
+}

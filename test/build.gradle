@@ -1,0 +1,199 @@
+/*
+ * DexPatcher - Copyright 2015-2020 Rodrigo Balerdi
+ * (GNU General Public License version 3 or later)
+ *
+ * DexPatcher is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ */
+
+import groovy.transform.CompileStatic
+
+plugins {
+    id 'java-base'
+}
+
+// This project implements two test tasks:
+// 1) The portable test, that is reduced in scope:
+//    -Produces a patched dex file from test source and patch files.
+// 2) The shell test, that is Linux-only:
+//    -Produces a patched dex file from test source and patch files.
+//    -Runs the source and patched dex files.
+//    -Captures all output and compares it with a reference output.
+
+// Select tests to run when executing the 'check' task:
+def runPortableTest = false
+def runShellTest = false
+
+repositories {
+    google()
+    maven { url 'https://dexpatcher.github.io/dexpatcher-repo/m2' }
+}
+
+configurations {
+    r8
+    dex2jar
+}
+
+dependencies {
+    r8 'com.android.tools:r8:1.5.68'
+    dex2jar 'dexpatcher-repo.dexpatcher.dex2jar:dex-tools:2.1-20171001-lanchon@zip'
+}
+
+def dexpatcherJar = tasks.getByPath(':tool:shadowJar').archiveFile
+
+def sourceJar = tasks.getByPath(':test:source:jar').archiveFile
+def patchJar = tasks.getByPath(':test:patch:jar').archiveFile
+
+// Portable Test
+
+@CompileStatic
+@CacheableTask
+class DexerTask extends JavaExec {
+
+    @PathSensitive(PathSensitivity.RELATIVE)
+    @InputFiles final ConfigurableFileCollection inputFiles = project.files()
+    @OutputFile final RegularFileProperty outputFile = project.objects.fileProperty()
+
+    @Input final ListProperty<String> extraArgs = project.objects.listProperty(String)
+
+    DexerTask() {
+
+        group = 'verification'
+        classpath project.configurations.getByName('r8')
+        main = 'com.android.tools.r8.D8'
+
+    }
+
+    @Override void exec() {
+
+        def args = new ArrayList<String>()
+
+        args.add('--no-desugaring')
+        args.addAll(['--output', outputFile.get() as String])
+
+        args.addAll(extraArgs.get())
+        //args.add('--')    // not supported by d8
+
+        if (inputFiles.empty) throw new RuntimeException('No input files specified')
+        args.addAll(inputFiles as List<String>)
+
+        super.setArgs args
+        super.exec()
+
+    }
+
+}
+
+task sourceDex(type:DexerTask) {
+
+    inputFiles.setFrom sourceJar
+    outputFile.set layout.buildDirectory.file('portable-test/source.dex.zip')
+
+}
+
+task patchDex(type:DexerTask) {
+
+    inputFiles.setFrom patchJar
+    outputFile.set layout.buildDirectory.file('portable-test/patch.dex.zip')
+
+}
+
+task portableTest(type:JavaExec) {
+
+    group 'verification'
+
+    outputs.upToDateWhen { false }
+
+    ext.sourceFile = sourceDex.outputFile
+    ext.patchFile = patchDex.outputFile
+    ext.outputFile = objects.fileProperty()
+    outputFile.set layout.buildDirectory.file('portable-test/patched.dex')
+    ext.templateMapFile = objects.fileProperty()
+    templateMapFile.set layout.buildDirectory.file('portable-test/template-mapping.txt')
+    ext.mapFile = objects.fileProperty()
+    mapFile.set layout.projectDirectory.file('mapping.txt')
+    ext.composeMapFile = objects.fileProperty()
+    composeMapFile.set layout.projectDirectory.file('compose-mapping.txt')
+
+    inputs.file sourceFile
+    inputs.file patchFile
+    outputs.file outputFile
+
+    classpath dexpatcherJar
+    args '--verbose',
+            '--map-source', '--unmap-output', '--map', mapFile.get(), '--compose-map', composeMapFile.get(),
+            '--deanon-source', '--reanon-output', '--main-plan', 'Anon[_Level]', '--deanon-patches-alt',
+                    '--no-reanon-errors',
+            '--decode-patches', '--no-decode-errors',
+            '--output', outputFile.get(),
+            '--create-map', templateMapFile.get(),
+            sourceFile.get(), patchFile.get()
+
+}
+
+// Shell Test (Linux-only)
+
+// Tool paths for this test are configured in 'shell-test.config'.
+
+def toolsDir = layout.buildDirectory.dir('tools')
+
+task setupTools(type:Sync) {
+
+    group 'verification'
+
+    from(configurations.r8) {
+        into 'r8'
+    }
+    from(zipTree(configurations.dex2jar.singleFile)) {
+        include 'dex-tools-*/lib/*'
+        includeEmptyDirs false
+        eachFile { f ->
+            f.path = 'dex2jar/' + f.name
+        }
+    }
+    into toolsDir
+
+}
+
+task shellTest(type:Exec) {
+
+    group 'verification'
+
+    dependsOn setupTools
+    inputs.dir toolsDir
+    inputs.file dexpatcherJar
+    inputs.file sourceJar
+    inputs.file patchJar
+    inputs.file layout.projectDirectory.file('shell-test')
+    inputs.file layout.projectDirectory.file('shell-test.config')
+    inputs.file layout.projectDirectory.file('shell-test-diff')
+    inputs.file layout.projectDirectory.file('shell-test-ref.txt')
+    outputs.file layout.buildDirectory.file('shell-test-out.txt')
+
+    commandLine 'bash', 'shell-test-diff'
+
+}
+
+// This task sets the shell test output reference to the current output.
+
+task shellTestSetReference(type:Exec) {
+
+    group 'verification'
+
+    dependsOn setupTools
+    dependsOn dexpatcherJar
+    dependsOn sourceJar
+    dependsOn patchJar
+
+    commandLine 'bash', 'shell-test-set-ref'
+
+}
+
+// Test Selection
+
+check {
+    if (runPortableTest) dependsOn portableTest
+    if (runShellTest) dependsOn shellTest
+}
