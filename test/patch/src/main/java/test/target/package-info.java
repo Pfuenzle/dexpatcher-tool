@@ -11,4 +11,4 @@
 @DexRemove(target = "test.nonrec")
 package test.target;
 
-import lanchon.dexpatcher.annotation.*;
+import io.pfuenzle.dexweaver.annotation.*;

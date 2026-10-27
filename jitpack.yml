@@ -1,0 +1,8 @@
+jdk:
+  - openjdk11
+
+before_install:
+  - sdk install java 11.0.29+7 || true
+
+install:
+  - ./gradlew :annotation:publishToMavenLocal :tool:publishToMavenLocal -x test --console=plain
