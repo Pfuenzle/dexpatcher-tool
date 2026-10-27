@@ -208,7 +208,8 @@ public final class FinderQuery {
         // Infer kind: field-specific keys imply FIELD, method-specific imply METHOD,
         // class-specific imply CLASS, otherwise ANY.
         boolean hasField  = (fieldType != null);
-        boolean hasMethod = (paramTypes != null || returnType != null || minSize >= 0 || getter);
+        boolean hasMethod = (paramTypes != null || returnType != null || minSize >= 0 || getter
+                || literal != null || field != null);
         boolean hasClass  = (superClass != null || interfaces != null);
 
         if (hasField && hasMethod) {

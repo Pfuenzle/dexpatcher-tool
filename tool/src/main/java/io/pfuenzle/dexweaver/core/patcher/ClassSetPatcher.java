@@ -13,6 +13,7 @@ package io.pfuenzle.dexweaver.core.patcher;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import io.pfuenzle.dexweaver.core.Action;
@@ -124,8 +125,10 @@ public class ClassSetPatcher extends AnnotatableSetPatcher<ClassDef> {
 		Collection<ClassDef> sourceClasses = getSourceMap() != null
 				? new ArrayList<>(getSourceMap().values())
 				: Collections.<ClassDef>emptyList();
-		String searchClass = FinderResolver.resolveSearchClass(spec, patch.getType());
-		ClassDef found = resolver.resolveClass(sourceClasses, searchClass);
+		String searchClass = (resolver.getQuery().kind == io.pfuenzle.dexweaver.core.finder.FinderQuery.Kind.METHOD
+				|| resolver.getQuery().kind == io.pfuenzle.dexweaver.core.finder.FinderQuery.Kind.FIELD)
+				? null : FinderResolver.resolveSearchClass(spec, patch.getType());
+		ClassDef found = resolver.resolveClassTarget(sourceClasses, searchClass);
 		if (found == null) {
 			throw new PatchException("finder target not found (" + spec + ")");
 		}
@@ -179,11 +182,18 @@ public class ClassSetPatcher extends AnnotatableSetPatcher<ClassDef> {
 		MethodSetPatcher methodPatcher = new MethodSetPatcher(this, annotation);
 		setFinderContext(fieldPatcher, methodPatcher, target, targetType);
 
+		String outputSuperclass = annotation.getFinder() != null
+				? target.getSuperclass() : source.getSuperclass();
+		List<String> outputInterfaces = new ArrayList<>();
+		for (CharSequence iface : annotation.getFinder() != null
+				? target.getInterfaces() : source.getInterfaces()) {
+			outputInterfaces.add(iface.toString());
+		}
 		return new BasicClassDef(
 				source.getType(),
 				source.getAccessFlags(),
-				source.getSuperclass(),
-				source.getInterfaces(),
+				outputSuperclass,
+				outputInterfaces,
 				source.getSourceFile(),
 				annotations,
 				Collections.unmodifiableCollection(fieldPatcher

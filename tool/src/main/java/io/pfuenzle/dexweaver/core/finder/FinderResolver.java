@@ -113,6 +113,23 @@ public final class FinderResolver {
 	}
 
 	/**
+	 * Resolve a class target from either a class query or a member query.
+	 * Member queries are useful when the class itself is obfuscated but one of
+	 * its methods has a stable signature or literal.
+	 */
+	public ClassDef resolveClassTarget(Iterable<? extends ClassDef> sourceClasses, String searchClass) {
+		if (query.kind == FinderQuery.Kind.METHOD || query.kind == FinderQuery.Kind.FIELD) {
+			Member member = resolveMember(sourceClasses, searchClass);
+			if (member == null) return null;
+			for (ClassDef classDef : sourceClasses) {
+				if (classDef.getType().equals(member.getDefiningClass())) return classDef;
+			}
+			return null;
+		}
+		return resolveClass(sourceClasses, searchClass);
+	}
+
+	/**
 	 * Resolve the descriptor of the class in which the search must be
 	 * performed.
 	 *
