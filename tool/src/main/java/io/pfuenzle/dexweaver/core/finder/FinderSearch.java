@@ -47,6 +47,7 @@ public final class FinderSearch {
         List<Method> result = new ArrayList<>();
         for (ClassDef classDef : sourceClasses) {
             if (searchClass != null && !searchClass.equals(classDef.getType())) continue;
+            if (matcher.requiresClassAnalysis()) matcher.setAnalysis(new ClassAnalysis(classDef));
             for (Method method : classDef.getMethods()) {
                 if (matcher.matches(method)) result.add(method);
             }
@@ -61,6 +62,7 @@ public final class FinderSearch {
         List<Field> result = new ArrayList<>();
         for (ClassDef classDef : sourceClasses) {
             if (searchClass != null && !searchClass.equals(classDef.getType())) continue;
+            if (matcher.requiresClassAnalysis()) matcher.setAnalysis(new ClassAnalysis(classDef));
             for (Field field : classDef.getFields()) {
                 if (matcher.matches(field)) result.add(field);
             }

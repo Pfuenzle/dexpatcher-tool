@@ -17,12 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jf.dexlib2.AccessFlags;
+import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.iface.Annotation;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.instruction.Instruction;
-
+import org.jf.dexlib2.iface.instruction.ReferenceInstruction;
+import org.jf.dexlib2.iface.reference.StringReference;
 /**
  * Matches dexlib2 members against a {@link FinderQuery}.
  *
@@ -57,6 +59,10 @@ public final class FinderMatcher {
 
     public FinderQuery getQuery() {
         return query;
+    }
+
+    boolean requiresClassAnalysis() {
+        return query.field != null;
     }
 
     // Methods
@@ -146,9 +152,12 @@ public final class FinderMatcher {
 
     private boolean matchesLiteral(Method method) {
         if (query.literal == null) return true;
-        if (analysis == null) return false;
-        for (String literal : analysis.getLiterals(method)) {
-            if (literal.contains(query.literal)) return true;
+        if (method.getImplementation() == null) return false;
+        for (Instruction instruction : method.getImplementation().getInstructions()) {
+            if (instruction.getOpcode() != Opcode.CONST_STRING) continue;
+            StringReference reference =
+                    (StringReference) ((ReferenceInstruction) instruction).getReference();
+            if (reference.toString().contains(query.literal)) return true;
         }
         return false;
     }

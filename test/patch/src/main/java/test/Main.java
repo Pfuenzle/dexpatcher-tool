@@ -642,6 +642,19 @@ public class Main {
 		public CrossClassCPatcher() { pClass("replaced %s::<init> (originally in CrossClassCPatcher)"); }
 	}
 
+	// Locate an obfuscated class and method while keeping readable patch names.
+	// The output must retain FinderTarget's descriptor so existing callers work.
+	@DexEdit
+	@DexFinder("m:public+static+final, r:boolean, l:finder-class-target")
+	public static class ReadableFinderPatch {
+		@DexReplace
+		@DexFinder("m:public+static+final, r:boolean, l:finder-class-target")
+		public static boolean readableMethod() {
+			p("replaced finder-class-target");
+			return true;
+		}
+	}
+
 	// DexPatcher tool v1.8.0 adds support for patching obfuscated code via
 	// optional identifier decode code transform passes. They allow using the
 	// Java language to work with identifiers that are illegal in the language

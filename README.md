@@ -79,8 +79,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Pfuenzle.dexweaver-tool:dexweaver-annotation:v2.0-beta1'
-    implementation 'com.github.Pfuenzle.dexweaver-tool:dexweaver:v2.0-beta1'
+    implementation 'com.github.Pfuenzle.dexweaver-tool:dexweaver-annotation:v2.0-beta4'
+    implementation 'com.github.Pfuenzle.dexweaver-tool:dexweaver:v2.0-beta4'
 }
 ```
 
@@ -162,6 +162,10 @@ public final class EntitlementUtilsPatch {
     }
 }
 ```
+
+The DexWeaver Gradle plugin exposes `checkMappings<Variant>` tasks that validate every
+`@DexFinder` directly against the source APK before patching. The checker prints each resolved
+class, method, and field, reports every missing target, and exits non-zero when any mapping fails.
 
 #### Finder query keys
 

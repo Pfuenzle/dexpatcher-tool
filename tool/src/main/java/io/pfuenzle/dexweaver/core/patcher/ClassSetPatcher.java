@@ -173,9 +173,11 @@ public class ClassSetPatcher extends AnnotatableSetPatcher<ClassDef> {
 		} else {
 			// Log class access flags before processing members.
 			super.onSimpleEdit(patch, annotation, target, inPlace);
+			boolean finderTarget = annotation.getFinder() != null;
+			if (finderTarget && !inPlace) patch = SimpleTypeRewriter.renameClass(patch, targetType);
 			source = patch;
 			annotations = annotation.getFilteredAnnotations();
-			if (!inPlace) target = SimpleTypeRewriter.renameClass(target, patch.getType());
+			if (!inPlace && !finderTarget) target = SimpleTypeRewriter.renameClass(target, patch.getType());
 		}
 
 		FieldSetPatcher fieldPatcher = new FieldSetPatcher(this, annotation);

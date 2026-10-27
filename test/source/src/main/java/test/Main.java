@@ -91,6 +91,8 @@ public class Main {
 		p();
 		new Double_$$_Encoding().print();
 		p();
+		FinderTarget.x();
+		p();
 	}
 
 	public static class A {
@@ -287,6 +289,13 @@ public class Main {
 	public static class CrossClassC {
 		static { p("original CrossClassC::<clinit>"); }
 		public CrossClassC() { p("original CrossClassC::<init>"); }
+	}
+
+	public static class FinderTarget {
+		public static final boolean x() {
+			p("original finder-class-target");
+			return false;
+		}
 	}
 
 	// Supposedly obfuscated class to be patched using identifier codes:
