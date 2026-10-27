@@ -7,12 +7,17 @@
 DexWeaver adds **semantic member resolution** to the patch model, so that patches can target
 obfuscated members by meaning instead of by their mangled names:
 
-* `@DexFinder` — resolve a class, field or method by a declarative query
-  (e.g. `m:public+final, p:com.revenuecat.purchases.CustomerInfo, r:com.example.billing.EntitlementStatus`)
-* semantic keys such as `l:` (string literal contained in the method), `f:` (field read by the
-  method) and `g:` (getter of a field)
-* resolves the obfuscated name of a target and patches the *found* member, keeping its original
-  name in the output dex
+* `@DexFinder` on a class — locate the class to patch by a query such as
+  `m:public+final, p:com.revenuecat.purchases.CustomerInfo, r:…` or simply by its
+  fully-qualified name via `className = "…"`.
+* `@DexFinder` on a method or field — locate the member inside the patched class by a
+  declarative query:
+  * `m:` access flags, `p:` parameter types, `r:` return type, `t:` field type, `n:` name
+  * `l:` string literal contained in the method body
+  * `f:` field read by the method
+  * `g:` getter of a named field (method that reads exactly that field and returns it)
+* DexWeaver resolves the obfuscated name at patch time and rewrites the output dex so that
+  the patched member keeps its original (obfuscated) name.
 
 ---
 
@@ -51,15 +56,14 @@ project.
 
 ## Packages
 
-The Java packages were renamed from `io.pfuenzle.dexweaver.*` to `io.pfuenzle.dexweaver.*`:
-
 | Upstream | This fork |
 | - | - |
-| `io.pfuenzle.dexweaver.annotation` | `io.pfuenzle.dexweaver.annotation` |
-| `io.pfuenzle.dexweaver` | `io.pfuenzle.dexweaver` |
-| `io.pfuenzle.dexweaver.gradle` | `io.pfuenzle.dexweaver.gradle` |
+| `lanchon.dexpatcher.annotation` | `io.pfuenzle.dexweaver.annotation` |
+| `lanchon.dexpatcher` | `io.pfuenzle.dexweaver` |
+| `lanchon.dexpatcher.gradle` | `io.pfuenzle.dexweaver.gradle` |
 
-The `multidexlib2` dependency is still the upstream `com.github.lanchon:multidexlib2` artifact.
+The `multidexlib2` dependency is still the upstream `com.github.lanchon.dexpatcher:multidexlib2`
+artifact.
 
 ---
 
@@ -84,6 +88,15 @@ The version is the Git tag name, so it always carries the `v` prefix.
 
 ### Annotations
 
+The full annotation set mirrors DexPatcher (`@DexEdit`, `@DexIgnore`, `@DexReplace`, `@DexAdd`,
+`@DexRemove`, `@DexWrap`, …) plus the new `@DexFinder`.
+
+#### Locating a class and its obfuscated getters
+
+A typical Kotlin data class compiled and obfuscated in an APK loses its field and method names
+while keeping a `toString()` that labels the fields (`"isPro="`, `"isPlus="`).  Use
+`@DexFinder` to declare how to find the class and its members:
+
 ```java
 package com.example.billing;
 
@@ -92,19 +105,81 @@ import io.pfuenzle.dexweaver.annotation.DexFinder;
 import io.pfuenzle.dexweaver.annotation.DexIgnore;
 import io.pfuenzle.dexweaver.annotation.DexReplace;
 
+// Locate the class by its unobfuscated name.
+// Alternatively, if only the class name is known: className = "com.example.pkg.ClassName"
 @DexEdit
-@DexFinder("m:public+final, p:com.revenuecat.purchases.CustomerInfo, "
-        + "r:com.example.billing.EntitlementStatus")
-public final class EntitlementStatus {
+@DexFinder(className = "com.application.example.billing.EntitlementStatus")
+public final class EntitlementStatusPatch {
+
+    // Keep the obfuscated fields as-is.
+    @DexIgnore public final boolean a = false;
+    @DexIgnore public final boolean b = false;
+    @DexIgnore public final Object  c = null;
+    @DexIgnore public final boolean d = false;
 
     @DexIgnore
-    public final boolean a = false;
+    public EntitlementStatusPatch(boolean isPro, boolean isPlus, Object periodType,
+            boolean isFromIos) {}
 
+    // Replace the getter of the "isPro" field.
+    // g:<label> means: the method that reads exactly the field whose toString label is <label>.
+    @DexFinder("g:isPro=")
     @DexReplace
-    public final boolean b() {
+    public final boolean getter() {
+        return true;
+    }
+
+    // Replace the getter of "isPlus".
+    @DexFinder("g:isPlus=")
+    @DexReplace
+    public final boolean getter2() {
+        return true;
+    }
+
+    // Replace the getter of "isFromIos".
+    @DexFinder("g:isFromIos=")
+    @DexReplace
+    public final boolean getter3() {
         return true;
     }
 }
 ```
+
+After patching, the output dex keeps the original obfuscated method names (`a`, `b`, `d`), and
+those methods now `return true` instead of reading the field.
+
+#### Finding a method by its signature
+
+```java
+@DexEdit
+@DexFinder("m:public+final, p:com.revenuecat.purchases.CustomerInfo, "
+        + "r:com.example.billing.EntitlementStatus")
+public final class EntitlementUtilsPatch {
+
+    @DexReplace
+    public final EntitlementStatus theMethod(CustomerInfo customerInfo) {
+        return new EntitlementStatus(true, true, null, true);
+    }
+}
+```
+
+#### Finder query keys
+
+| Key | Applies to | Meaning |
+| - | - | - |
+| `m:` | method, field, class | access flags, e.g. `public+final` |
+| `p:` | method | parameter types, comma-separated full class names |
+| `r:` | method | return type |
+| `t:` | field | field type |
+| `n:` | method, field, class | exact member or simple class name |
+| `s:` | class | superclass |
+| `i:` | class | interface (repeatable with `+`) |
+| `a:` | class | annotation present on the class |
+| `l:` | method | string literal present in the bytecode |
+| `f:` | method, field | field read by the method, or field matched by label |
+| `g:` | method | getter of a field (reads exactly that field, no parameters) |
+| `z:` | method | minimum instruction count |
+
+---
 
 DexWeaver is free software. (GPLv3+)
