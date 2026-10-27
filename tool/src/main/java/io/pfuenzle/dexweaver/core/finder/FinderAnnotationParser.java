@@ -64,12 +64,14 @@ public final class FinderAnnotationParser {
 				className = value;
 			}
 		}
-		if (query == null || query.isEmpty()) {
+		boolean queryEmpty = (query == null || query.isEmpty());
+		boolean classNameEmpty = (className == null || className.isEmpty());
+		if (queryEmpty && classNameEmpty) {
 			throw new FinderQueryException("finder annotation has no query");
 		}
 		// Validate the query eagerly so that errors surface at parse time.
-		FinderQuery.parse(query);
-		if (className != null && className.isEmpty()) className = null;
+		if (!queryEmpty) FinderQuery.parse(query);
+		if (classNameEmpty) className = null;
 		return new FinderSpec(query, className);
 	}
 

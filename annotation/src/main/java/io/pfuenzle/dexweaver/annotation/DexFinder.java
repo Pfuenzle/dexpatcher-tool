@@ -32,7 +32,8 @@ public @interface DexFinder {
 
 	// The finder query, using the DexExplore advanced query syntax, for
 	// example 'm:public+final, p:com.revenuecat.purchases.CustomerInfo'.
-	String value();
+	// May be empty if only 'className' is given.
+	String value() default "";
 
 	// The class in which to search for the target, as a fully qualified
 	// class name. If empty, the class of the annotated patch item is used.
