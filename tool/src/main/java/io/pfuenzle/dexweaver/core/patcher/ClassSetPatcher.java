@@ -160,6 +160,9 @@ public class ClassSetPatcher extends AnnotatableSetPatcher<ClassDef> {
 
 		ClassDef source;
 		Set<? extends Annotation> annotations;
+		// The type of the class being patched, before any renaming; used as the
+		// default search space of finder annotations.
+		String targetType = target.getType();
 		if (annotation.getContentOnly()) {
 			source = target;
 			annotations = target.getAnnotations();
@@ -174,7 +177,7 @@ public class ClassSetPatcher extends AnnotatableSetPatcher<ClassDef> {
 
 		FieldSetPatcher fieldPatcher = new FieldSetPatcher(this, annotation);
 		MethodSetPatcher methodPatcher = new MethodSetPatcher(this, annotation);
-		setFinderContext(fieldPatcher, methodPatcher, target);
+		setFinderContext(fieldPatcher, methodPatcher, target, targetType);
 
 		return new BasicClassDef(
 				source.getType(),
@@ -196,13 +199,13 @@ public class ClassSetPatcher extends AnnotatableSetPatcher<ClassDef> {
 	 * resolved.
 	 */
 	private void setFinderContext(FieldSetPatcher fieldPatcher, MethodSetPatcher methodPatcher,
-			ClassDef target) {
+			ClassDef target, String targetType) {
 		Collection<ClassDef> sourceClasses = getSourceMap() != null
 				? new ArrayList<>(getSourceMap().values())
 				: Collections.<ClassDef>emptyList();
 		ClassAnalysis analysis = new ClassAnalysis(target, target.getFields());
-		fieldPatcher.setFinderContext(sourceClasses, analysis);
-		methodPatcher.setFinderContext(sourceClasses, analysis);
+		fieldPatcher.setFinderContext(sourceClasses, analysis, targetType);
+		methodPatcher.setFinderContext(sourceClasses, analysis, targetType);
 	}
 
 	@Override

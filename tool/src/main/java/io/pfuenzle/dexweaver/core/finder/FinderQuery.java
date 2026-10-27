@@ -101,7 +101,14 @@ public final class FinderQuery {
      */
     public static FinderQuery parse(String query) throws FinderQueryException {
         if (query == null || query.trim().isEmpty()) {
-            throw new FinderQueryException("finder query must not be empty");
+            // Empty query: match-all (used when only className is specified).
+            return new FinderQuery(
+                    java.util.Collections.<String>emptyList(),
+                    java.util.Collections.<String>emptyList(),
+                    null, null, null, null,
+                    java.util.Collections.<String>emptyList(),
+                    java.util.Collections.<String>emptyList(),
+                    -1, null, null, false, Kind.ANY);
         }
 
         List<String> modifiers  = null;

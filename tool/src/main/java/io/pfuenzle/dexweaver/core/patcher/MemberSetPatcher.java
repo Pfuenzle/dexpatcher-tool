@@ -48,6 +48,11 @@ public abstract class MemberSetPatcher<T extends Member> extends AnnotatableSetP
 	private ClassAnalysis classAnalysis;
 
 	/**
+	 * The type of the class being patched, used as the default search space
+	 * of finder annotations.
+	 */
+	private String targetClass;
+	/**
 	 * The names of the targets resolved by finder annotations, by patch id.
 	 *
 	 * <p>The patched member must keep the name of the member it replaces, as
@@ -94,10 +99,18 @@ public abstract class MemberSetPatcher<T extends Member> extends AnnotatableSetP
 	/**
 	 * Set the source classes and the analysis of the class being patched, so
 	 * that finder annotations can be resolved.
+	 *
+	 * @param sourceClasses the classes of the source app
+	 * @param classAnalysis the analysis of the class being patched
+	 * @param targetClass   the type of the class being patched, as a
+	 *                      descriptor; used as the default search space of
+	 *                      finder annotations
 	 */
-	public void setFinderContext(Collection<ClassDef> sourceClasses, ClassAnalysis classAnalysis) {
+	public void setFinderContext(Collection<ClassDef> sourceClasses, ClassAnalysis classAnalysis,
+			String targetClass) {
 		this.sourceClasses = sourceClasses;
 		this.classAnalysis = classAnalysis;
+		this.targetClass = targetClass;
 	}
 
 	protected Collection<ClassDef> getSourceClasses() {
@@ -106,6 +119,13 @@ public abstract class MemberSetPatcher<T extends Member> extends AnnotatableSetP
 
 	protected ClassAnalysis getClassAnalysis() {
 		return classAnalysis;
+	}
+
+	/**
+	 * The type of the class being patched, as a descriptor.
+	 */
+	protected String getTargetClass() {
+		return targetClass;
 	}
 
 	/**
@@ -128,7 +148,10 @@ public abstract class MemberSetPatcher<T extends Member> extends AnnotatableSetP
 			throw new PatchException("invalid finder query (" + e.getMessage() + ")");
 		}
 		resolver.getMatcher().setAnalysis(classAnalysis);
-		String searchClass = FinderResolver.resolveSearchClass(spec, patchClass);
+		// Prefer the target class (the class being patched) over the patch class
+		// (which is a synthetic name when a class-level @DexFinder is used).
+		String defaultSearchClass = (targetClass != null) ? targetClass : patchClass;
+		String searchClass = FinderResolver.resolveSearchClass(spec, defaultSearchClass);
 		Member target = resolver.resolveMember(sourceClasses, searchClass);
 		if (target == null) {
 			throw new PatchException("finder target not found (" + spec + ")");

@@ -175,9 +175,25 @@ public final class ClassAnalysis {
 	/**
 	 * The field associated with the given literal, or null if the literal is
 	 * not associated with any field.
+	 *
+	 * <p>The lookup is tolerant: the literal may be the full label of the
+	 * generated {@code toString()} method, such as
+	 * {@code "EntitlementStatus(isPro="}, or just its tail, such as
+	 * {@code "isPro="}. A literal without an equals sign is interpreted as a
+	 * semantic name of a field.
 	 */
 	public String getFieldForLiteral(String literal) {
-		return literalToField.get(literal);
+		if (literal == null) return null;
+		String field = literalToField.get(literal);
+		if (field != null) return field;
+		// The label of the first field also carries the class name, as in
+		// "EntitlementStatus(isPro="; match on the tail of the label.
+		for (Map.Entry<String, String> entry : literalToField.entrySet()) {
+			if (entry.getKey().endsWith(literal)) return entry.getValue();
+		}
+		// A literal without an equals sign is a semantic field name.
+		if (!literal.contains("=")) return getFieldForSemanticName(literal);
+		return null;
 	}
 
 	/**
