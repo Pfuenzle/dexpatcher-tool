@@ -17,8 +17,8 @@ import io.pfuenzle.dexweaver.core.util.Label;
 import io.pfuenzle.dexweaver.transform.MemberLogger;
 import io.pfuenzle.dexweaver.transform.TransformLogger;
 
-import org.jf.dexlib2.iface.reference.FieldReference;
-import org.jf.dexlib2.iface.reference.MethodReference;
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference;
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference;
 
 public class LoggingDexMap extends MemberLogger implements DexMap {
 

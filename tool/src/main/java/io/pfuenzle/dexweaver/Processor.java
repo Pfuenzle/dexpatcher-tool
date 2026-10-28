@@ -40,10 +40,10 @@ import lanchon.multidexlib2.MultiDexIO;
 import lanchon.multidexlib2.OpcodeUtils;
 import lanchon.multidexlib2.SingletonDexContainer;
 
-import org.jf.dexlib2.Opcodes;
-import org.jf.dexlib2.iface.DexFile;
-import org.jf.dexlib2.rewriter.DexRewriter;
-import org.jf.dexlib2.rewriter.RewriterModule;
+import com.android.tools.smali.dexlib2.Opcodes;
+import com.android.tools.smali.dexlib2.iface.DexFile;
+import com.android.tools.smali.dexlib2.rewriter.DexRewriter;
+import com.android.tools.smali.dexlib2.rewriter.RewriterModule;
 
 import static io.pfuenzle.dexweaver.core.logger.Logger.Level.*;
 
@@ -81,7 +81,7 @@ public class Processor {
 	}
 
 	private static DexFile transformDex(DexFile dex, RewriterModule module) {
-		return new DexRewriter(module).rewriteDexFile(dex);
+        return new DexRewriter(module).getDexFileRewriter().rewrite(dex);
 	}
 
 	private final Logger logger;

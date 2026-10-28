@@ -25,33 +25,33 @@ import io.pfuenzle.dexweaver.core.util.DexUtils;
 import io.pfuenzle.dexweaver.core.util.Id;
 import io.pfuenzle.dexweaver.core.util.Label;
 
-import org.jf.dexlib2.Opcode;
-import org.jf.dexlib2.iface.Annotation;
-import org.jf.dexlib2.iface.Method;
-import org.jf.dexlib2.iface.MethodImplementation;
-import org.jf.dexlib2.iface.MethodParameter;
-import org.jf.dexlib2.iface.debug.DebugItem;
-import org.jf.dexlib2.iface.debug.LineNumber;
-import org.jf.dexlib2.iface.debug.SetSourceFile;
-import org.jf.dexlib2.iface.instruction.Instruction;
-import org.jf.dexlib2.iface.instruction.ReferenceInstruction;
-import org.jf.dexlib2.iface.instruction.formats.Instruction35c;
-import org.jf.dexlib2.iface.instruction.formats.Instruction3rc;
-import org.jf.dexlib2.iface.reference.Reference;
-import org.jf.dexlib2.immutable.ImmutableMethodImplementation;
-import org.jf.dexlib2.immutable.instruction.ImmutableInstruction;
-import org.jf.dexlib2.immutable.instruction.ImmutableInstructionFactory;
-import org.jf.dexlib2.rewriter.DexRewriter;
-import org.jf.dexlib2.rewriter.InstructionRewriter;
-import org.jf.dexlib2.rewriter.Rewriter;
-import org.jf.dexlib2.rewriter.RewriterModule;
-import org.jf.dexlib2.rewriter.Rewriters;
-import org.jf.dexlib2.util.MethodUtil;
-import org.jf.dexlib2.util.TypeUtils;
+import com.android.tools.smali.dexlib2.Opcode;
+import com.android.tools.smali.dexlib2.iface.Annotation;
+import com.android.tools.smali.dexlib2.iface.Method;
+import com.android.tools.smali.dexlib2.iface.MethodImplementation;
+import com.android.tools.smali.dexlib2.iface.MethodParameter;
+import com.android.tools.smali.dexlib2.iface.debug.DebugItem;
+import com.android.tools.smali.dexlib2.iface.debug.LineNumber;
+import com.android.tools.smali.dexlib2.iface.debug.SetSourceFile;
+import com.android.tools.smali.dexlib2.iface.instruction.Instruction;
+import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction;
+import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction35c;
+import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction3rc;
+import com.android.tools.smali.dexlib2.iface.reference.Reference;
+import com.android.tools.smali.dexlib2.immutable.ImmutableMethodImplementation;
+import com.android.tools.smali.dexlib2.immutable.instruction.ImmutableInstruction;
+import com.android.tools.smali.dexlib2.immutable.instruction.ImmutableInstructionFactory;
+import com.android.tools.smali.dexlib2.rewriter.DexRewriter;
+import com.android.tools.smali.dexlib2.rewriter.InstructionRewriter;
+import com.android.tools.smali.dexlib2.rewriter.Rewriter;
+import com.android.tools.smali.dexlib2.rewriter.RewriterModule;
+import com.android.tools.smali.dexlib2.rewriter.Rewriters;
+import com.android.tools.smali.dexlib2.util.MethodUtil;
+import com.android.tools.smali.dexlib2.util.TypeUtils;
 
 import static io.pfuenzle.dexweaver.core.logger.Logger.Level.*;
-import static org.jf.dexlib2.AccessFlags.*;
-import static org.jf.dexlib2.Opcode.*;
+import static com.android.tools.smali.dexlib2.AccessFlags.*;
+import static com.android.tools.smali.dexlib2.Opcode.*;
 
 public class MethodSetPatcher extends MemberSetPatcher<Method> {
 
@@ -239,6 +239,7 @@ public class MethodSetPatcher extends MemberSetPatcher<Method> {
 				patch.getReturnType(),
 				patch.getAccessFlags(),
 				annotation.getFilteredAnnotations(),
+				target.getHiddenApiRestrictions(),
 				implementation);
 
 		return super.onSimpleEdit(patched, annotation, target, inPlace);
@@ -256,6 +257,7 @@ public class MethodSetPatcher extends MemberSetPatcher<Method> {
 				patch.getReturnType(),
 				patch.getAccessFlags(),
 				annotation.getFilteredAnnotations(),
+				target.getHiddenApiRestrictions(),
 				patch.getImplementation());
 		return onSimpleAdd(renamed, annotation);
 	}
@@ -278,6 +280,7 @@ public class MethodSetPatcher extends MemberSetPatcher<Method> {
 				target.getReturnType(),
 				createMethodFlags(target),
 				target.getAnnotations(),
+				target.getHiddenApiRestrictions(),
 				target.getImplementation());
 		addPatched(patch, wrapSource);
 
@@ -316,6 +319,7 @@ public class MethodSetPatcher extends MemberSetPatcher<Method> {
 				target.getReturnType(),
 				createMethodFlags(target),
 				target.getAnnotations(),
+				target.getHiddenApiRestrictions(),
 				target.getImplementation());
 		addPatched(patch, spliceSource);
 

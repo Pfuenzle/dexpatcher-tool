@@ -15,9 +15,9 @@ import io.pfuenzle.dexweaver.core.util.Label;
 import io.pfuenzle.dexweaver.transform.BaseLogger;
 import io.pfuenzle.dexweaver.transform.TransformLogger;
 
-import org.jf.dexlib2.rewriter.Rewriter;
-import org.jf.dexlib2.rewriter.RewriterModule;
-import org.jf.dexlib2.rewriter.Rewriters;
+import com.android.tools.smali.dexlib2.rewriter.Rewriter;
+import com.android.tools.smali.dexlib2.rewriter.RewriterModule;
+import com.android.tools.smali.dexlib2.rewriter.Rewriters;
 
 public final class DexAnonymizer extends BaseLogger implements Rewriter<String>, TypeAnonymizer.ErrorHandler {
 

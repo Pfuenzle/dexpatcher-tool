@@ -16,9 +16,9 @@ package io.pfuenzle.dexweaver.core.finder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jf.dexlib2.iface.ClassDef;
-import org.jf.dexlib2.iface.Field;
-import org.jf.dexlib2.iface.Method;
+import com.android.tools.smali.dexlib2.iface.ClassDef;
+import com.android.tools.smali.dexlib2.iface.Field;
+import com.android.tools.smali.dexlib2.iface.Method;
 
 /**
  * Searches a set of source classes for the members matching a finder query.

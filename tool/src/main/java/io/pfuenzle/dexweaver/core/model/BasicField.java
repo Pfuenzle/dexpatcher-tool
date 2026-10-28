@@ -10,12 +10,14 @@
 
 package io.pfuenzle.dexweaver.core.model;
 
+import java.util.Collections;
 import java.util.Set;
 
-import org.jf.dexlib2.base.reference.BaseFieldReference;
-import org.jf.dexlib2.iface.Annotation;
-import org.jf.dexlib2.iface.Field;
-import org.jf.dexlib2.iface.value.EncodedValue;
+import com.android.tools.smali.dexlib2.HiddenApiRestriction;
+import com.android.tools.smali.dexlib2.base.reference.BaseFieldReference;
+import com.android.tools.smali.dexlib2.iface.Annotation;
+import com.android.tools.smali.dexlib2.iface.Field;
+import com.android.tools.smali.dexlib2.iface.value.EncodedValue;
 
 public class BasicField extends BaseFieldReference implements Field {
 
@@ -25,6 +27,7 @@ public class BasicField extends BaseFieldReference implements Field {
 	private final int accessFlags;
 	private final EncodedValue initialValue;
 	private final Set<? extends Annotation> annotations;
+	private final Set<HiddenApiRestriction> hiddenApiRestrictions;
 
 	public BasicField(
 			String definingClass,
@@ -34,12 +37,25 @@ public class BasicField extends BaseFieldReference implements Field {
 			EncodedValue initialValue,
 			Set<? extends Annotation> annotations
 	) {
+		this(definingClass, name, type, accessFlags, initialValue, annotations, Collections.emptySet());
+	}
+
+	public BasicField(
+			String definingClass,
+			String name,
+			String type,
+			int accessFlags,
+			EncodedValue initialValue,
+			Set<? extends Annotation> annotations,
+			Set<HiddenApiRestriction> hiddenApiRestrictions
+	) {
 		this.definingClass = definingClass;
 		this.name = name;
 		this.type = type;
 		this.accessFlags = accessFlags;
 		this.initialValue = initialValue;
 		this.annotations = annotations;
+		this.hiddenApiRestrictions = hiddenApiRestrictions;
 	}
 
 	@Override
@@ -70,6 +86,11 @@ public class BasicField extends BaseFieldReference implements Field {
 	@Override
 	public Set<? extends Annotation> getAnnotations() {
 		return annotations;
+	}
+	@Override
+	public Set<HiddenApiRestriction> getHiddenApiRestrictions() {
+		return hiddenApiRestrictions;
+
 	}
 
 }

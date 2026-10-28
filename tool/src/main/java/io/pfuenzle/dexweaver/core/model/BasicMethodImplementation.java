@@ -12,11 +12,11 @@ package io.pfuenzle.dexweaver.core.model;
 
 import java.util.List;
 
-import org.jf.dexlib2.iface.ExceptionHandler;
-import org.jf.dexlib2.iface.MethodImplementation;
-import org.jf.dexlib2.iface.TryBlock;
-import org.jf.dexlib2.iface.debug.DebugItem;
-import org.jf.dexlib2.iface.instruction.Instruction;
+import com.android.tools.smali.dexlib2.iface.ExceptionHandler;
+import com.android.tools.smali.dexlib2.iface.MethodImplementation;
+import com.android.tools.smali.dexlib2.iface.TryBlock;
+import com.android.tools.smali.dexlib2.iface.debug.DebugItem;
+import com.android.tools.smali.dexlib2.iface.instruction.Instruction;
 
 public class BasicMethodImplementation implements MethodImplementation {
 

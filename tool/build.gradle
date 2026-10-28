@@ -23,30 +23,20 @@ ext.artifactName = 'DexWeaver-tool'
 
 def fatArtifact = 'dexweaver'
 
-sourceCompatibility = '1.7'
-def jdk = findProperty('JDK7_HOME') ?: '/usr/lib/jvm/java-7-openjdk-amd64'
-def jdk_rt = new File(jdk, 'jre/lib/rt.jar')
-if (jdk_rt.exists()) compileJava.options.bootstrapClasspath = files(jdk_rt)
+sourceCompatibility = '1.8'
 
 repositories {
-    jcenter()
+    google()
     mavenCentral()
-
-    // Use local version of multidexlib2:
-    maven {
-        url = '../../multidexlib2/build/repository'
-    }
+    maven { url 'https://jitpack.io' }
 }
 
-def dexlib2Version = '2.3.4'
-def multidexlib2VersionSuffix = '.r2'
-
-def multidexlib2Version = dexlib2Version + multidexlib2VersionSuffix
+def dexlib2Version = '3.0.10'
 
 dependencies {
     implementation 'commons-cli:commons-cli:1.4'
-    implementation 'com.github.lanchon.dexpatcher:multidexlib2:' + multidexlib2Version
-    api 'org.smali:dexlib2:' + dexlib2Version
+    implementation project(':multidexlib2')
+    api 'com.android.tools.smali:smali-dexlib2:' + dexlib2Version
 }
 
 compileJava {

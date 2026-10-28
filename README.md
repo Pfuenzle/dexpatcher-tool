@@ -69,22 +69,10 @@ artifact.
 
 ## Usage
 
-### Maven coordinates
 
-Artifacts are published to [JitPack](https://jitpack.io) and can be consumed anonymously:
+### Development build
 
-```gradle
-repositories {
-    maven { url 'https://jitpack.io' }
-}
-
-dependencies {
-    implementation 'com.github.Pfuenzle.dexweaver-tool:dexweaver-annotation:v2.0-beta4'
-    implementation 'com.github.Pfuenzle.dexweaver-tool:dexweaver:v2.0-beta4'
-}
-```
-
-The version is the Git tag name, so it always carries the `v` prefix.
+The Coder workspace builds DexWeaver against Google Smali 3.0.10 and Pfuenzle `multidexlib2` 3.0.10.r3 from source into local Maven repositories. The published DexWeaver tool and Gradle plugin release versions remain unchanged.
 
 ### Annotations
 

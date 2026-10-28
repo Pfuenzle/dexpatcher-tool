@@ -15,10 +15,10 @@ import io.pfuenzle.dexweaver.core.util.Label;
 import io.pfuenzle.dexweaver.transform.mapper.map.DexMap;
 
 import com.google.common.collect.ImmutableList;
-import org.jf.dexlib2.iface.reference.FieldReference;
-import org.jf.dexlib2.iface.reference.MethodReference;
-import org.jf.dexlib2.immutable.reference.ImmutableFieldReference;
-import org.jf.dexlib2.immutable.reference.ImmutableMethodReference;
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference;
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference;
+import com.android.tools.smali.dexlib2.immutable.reference.ImmutableFieldReference;
+import com.android.tools.smali.dexlib2.immutable.reference.ImmutableMethodReference;
 
 public class CompositeMapBuilder implements MapBuilder {
 

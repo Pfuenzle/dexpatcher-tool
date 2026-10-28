@@ -20,13 +20,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jf.dexlib2.Opcode;
-import org.jf.dexlib2.iface.ClassDef;
-import org.jf.dexlib2.iface.Method;
-import org.jf.dexlib2.iface.instruction.Instruction;
-import org.jf.dexlib2.iface.instruction.ReferenceInstruction;
-import org.jf.dexlib2.iface.reference.FieldReference;
-import org.jf.dexlib2.iface.reference.StringReference;
+import com.android.tools.smali.dexlib2.Opcode;
+import com.android.tools.smali.dexlib2.iface.ClassDef;
+import com.android.tools.smali.dexlib2.iface.Method;
+import com.android.tools.smali.dexlib2.iface.instruction.Instruction;
+import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction;
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference;
+import com.android.tools.smali.dexlib2.iface.reference.StringReference;
 
 /**
  * Extracts the fields read and the string literals used by the methods of a
@@ -51,18 +51,18 @@ public final class ClassAnalysis {
 		this(classDef.getType(), classDef.getMethods(), classDef.getFields());
 	}
 
-	public ClassAnalysis(ClassDef classDef, Iterable<? extends org.jf.dexlib2.iface.Field> fields) {
+	public ClassAnalysis(ClassDef classDef, Iterable<? extends com.android.tools.smali.dexlib2.iface.Field> fields) {
 		this(classDef.getType(), classDef.getMethods(), fields);
 	}
 
 	public ClassAnalysis(String classType, Iterable<? extends Method> methods) {
-		this(classType, methods, java.util.Collections.<org.jf.dexlib2.iface.Field>emptyList());
+		this(classType, methods, java.util.Collections.<com.android.tools.smali.dexlib2.iface.Field>emptyList());
 	}
 
 	public ClassAnalysis(String classType, Iterable<? extends Method> methods,
-			Iterable<? extends org.jf.dexlib2.iface.Field> fields) {
+			Iterable<? extends com.android.tools.smali.dexlib2.iface.Field> fields) {
 		this.classType = classType;
-		for (org.jf.dexlib2.iface.Field field : fields) {
+		for (com.android.tools.smali.dexlib2.iface.Field field : fields) {
 			fieldNames.add(field.getName());
 		}
 		for (Method method : methods) {

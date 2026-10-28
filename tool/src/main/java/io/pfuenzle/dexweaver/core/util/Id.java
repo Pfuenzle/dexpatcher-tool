@@ -12,9 +12,9 @@ package io.pfuenzle.dexweaver.core.util;
 
 import io.pfuenzle.dexweaver.core.Marker;
 
-import org.jf.dexlib2.iface.ClassDef;
-import org.jf.dexlib2.iface.reference.FieldReference;
-import org.jf.dexlib2.iface.reference.MethodReference;
+import com.android.tools.smali.dexlib2.iface.ClassDef;
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference;
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference;
 
 public class Id {
 

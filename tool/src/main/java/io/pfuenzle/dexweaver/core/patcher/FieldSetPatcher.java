@@ -17,13 +17,13 @@ import io.pfuenzle.dexweaver.core.model.BasicField;
 import io.pfuenzle.dexweaver.core.util.Id;
 import io.pfuenzle.dexweaver.core.util.Label;
 
-import org.jf.dexlib2.iface.Field;
-import org.jf.dexlib2.iface.value.EncodedValue;
-import org.jf.dexlib2.util.FieldUtil;
+import com.android.tools.smali.dexlib2.iface.Field;
+import com.android.tools.smali.dexlib2.iface.value.EncodedValue;
+import com.android.tools.smali.dexlib2.util.FieldUtil;
 
 import static io.pfuenzle.dexweaver.core.PatcherAnnotation.*;
 import static io.pfuenzle.dexweaver.core.logger.Logger.Level.*;
-import static org.jf.dexlib2.AccessFlags.*;
+import static com.android.tools.smali.dexlib2.AccessFlags.*;
 
 public class FieldSetPatcher extends MemberSetPatcher<Field> {
 
@@ -108,7 +108,8 @@ public class FieldSetPatcher extends MemberSetPatcher<Field> {
 				patch.getType(),
 				patch.getAccessFlags(),
 				value,
-				annotation.getFilteredAnnotations());
+				annotation.getFilteredAnnotations(),
+				target.getHiddenApiRestrictions());
 
 		return super.onSimpleEdit(patched, annotation, target, inPlace);
 

@@ -17,11 +17,11 @@ import io.pfuenzle.dexweaver.transform.util.wrapper.WrapperFieldReference;
 import io.pfuenzle.dexweaver.transform.util.wrapper.WrapperMethodReference;
 import io.pfuenzle.dexweaver.transform.util.wrapper.WrapperRewriterModule;
 
-import org.jf.dexlib2.iface.reference.FieldReference;
-import org.jf.dexlib2.iface.reference.MethodReference;
-import org.jf.dexlib2.rewriter.Rewriter;
-import org.jf.dexlib2.rewriter.RewriterModule;
-import org.jf.dexlib2.rewriter.Rewriters;
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference;
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference;
+import com.android.tools.smali.dexlib2.rewriter.Rewriter;
+import com.android.tools.smali.dexlib2.rewriter.RewriterModule;
+import com.android.tools.smali.dexlib2.rewriter.Rewriters;
 
 public class DexMapperModule extends WrapperRewriterModule<RewriterModule> {
 

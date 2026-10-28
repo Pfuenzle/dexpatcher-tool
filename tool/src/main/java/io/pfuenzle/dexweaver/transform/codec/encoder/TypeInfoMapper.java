@@ -16,8 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.jf.dexlib2.iface.ClassDef;
-import org.jf.dexlib2.iface.DexFile;
+import com.android.tools.smali.dexlib2.iface.ClassDef;
+import com.android.tools.smali.dexlib2.iface.DexFile;
 
 public class TypeInfoMapper {
 

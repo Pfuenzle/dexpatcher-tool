@@ -10,9 +10,9 @@
 
 package io.pfuenzle.dexweaver.transform.util.wrapper;
 
-import org.jf.dexlib2.base.BaseAnnotationElement;
-import org.jf.dexlib2.iface.AnnotationElement;
-import org.jf.dexlib2.iface.value.EncodedValue;
+import com.android.tools.smali.dexlib2.base.BaseAnnotationElement;
+import com.android.tools.smali.dexlib2.iface.AnnotationElement;
+import com.android.tools.smali.dexlib2.iface.value.EncodedValue;
 
 public class WrapperAnnotationElement extends BaseAnnotationElement {
 

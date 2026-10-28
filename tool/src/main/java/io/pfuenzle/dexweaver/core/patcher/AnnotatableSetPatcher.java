@@ -20,9 +20,9 @@ import io.pfuenzle.dexweaver.core.PatcherAnnotation;
 import io.pfuenzle.dexweaver.core.logger.Logger;
 import io.pfuenzle.dexweaver.core.util.AccessFlagLogger;
 
-import org.jf.dexlib2.iface.Annotatable;
-import org.jf.dexlib2.iface.Annotation;
-import org.jf.dexlib2.iface.ClassDef;
+import com.android.tools.smali.dexlib2.iface.Annotatable;
+import com.android.tools.smali.dexlib2.iface.Annotation;
+import com.android.tools.smali.dexlib2.iface.ClassDef;
 
 import static io.pfuenzle.dexweaver.core.logger.Logger.Level.*;
 

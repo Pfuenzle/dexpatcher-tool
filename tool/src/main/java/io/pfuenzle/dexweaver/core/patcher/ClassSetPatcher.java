@@ -33,8 +33,8 @@ import io.pfuenzle.dexweaver.core.util.Label;
 import io.pfuenzle.dexweaver.core.util.SimpleTypeRewriter;
 import io.pfuenzle.dexweaver.core.util.Target;
 
-import org.jf.dexlib2.iface.Annotation;
-import org.jf.dexlib2.iface.ClassDef;
+import com.android.tools.smali.dexlib2.iface.Annotation;
+import com.android.tools.smali.dexlib2.iface.ClassDef;
 
 import static io.pfuenzle.dexweaver.core.PatcherAnnotation.*;
 import static io.pfuenzle.dexweaver.core.logger.Logger.Level.*;

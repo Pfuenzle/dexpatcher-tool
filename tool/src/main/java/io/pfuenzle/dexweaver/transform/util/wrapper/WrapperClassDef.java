@@ -15,11 +15,11 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.Iterators;
-import org.jf.dexlib2.base.reference.BaseTypeReference;
-import org.jf.dexlib2.iface.Annotation;
-import org.jf.dexlib2.iface.ClassDef;
-import org.jf.dexlib2.iface.Field;
-import org.jf.dexlib2.iface.Method;
+import com.android.tools.smali.dexlib2.base.reference.BaseTypeReference;
+import com.android.tools.smali.dexlib2.iface.Annotation;
+import com.android.tools.smali.dexlib2.iface.ClassDef;
+import com.android.tools.smali.dexlib2.iface.Field;
+import com.android.tools.smali.dexlib2.iface.Method;
 
 public class WrapperClassDef extends BaseTypeReference implements ClassDef {
 

@@ -10,14 +10,16 @@
 
 package io.pfuenzle.dexweaver.core.model;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.jf.dexlib2.base.reference.BaseMethodReference;
-import org.jf.dexlib2.iface.Annotation;
-import org.jf.dexlib2.iface.Method;
-import org.jf.dexlib2.iface.MethodImplementation;
-import org.jf.dexlib2.iface.MethodParameter;
+import com.android.tools.smali.dexlib2.HiddenApiRestriction;
+import com.android.tools.smali.dexlib2.base.reference.BaseMethodReference;
+import com.android.tools.smali.dexlib2.iface.Annotation;
+import com.android.tools.smali.dexlib2.iface.Method;
+import com.android.tools.smali.dexlib2.iface.MethodImplementation;
+import com.android.tools.smali.dexlib2.iface.MethodParameter;
 
 public class BasicMethod extends BaseMethodReference implements Method {
 
@@ -27,6 +29,7 @@ public class BasicMethod extends BaseMethodReference implements Method {
 	private final String returnType;
 	private final int accessFlags;
 	private final Set<? extends Annotation> annotations;
+	private final Set<HiddenApiRestriction> hiddenApiRestrictions;
 	private final MethodImplementation methodImplementation;
 
 	public BasicMethod(
@@ -38,12 +41,27 @@ public class BasicMethod extends BaseMethodReference implements Method {
 			Set<? extends Annotation> annotations,
 			MethodImplementation methodImplementation
 	) {
+		this(definingClass, name, parameters, returnType, accessFlags, annotations,
+				Collections.emptySet(), methodImplementation);
+	}
+
+	public BasicMethod(
+			String definingClass,
+			String name,
+			List<? extends MethodParameter> parameters,
+			String returnType,
+			int accessFlags,
+			Set<? extends Annotation> annotations,
+			Set<HiddenApiRestriction> hiddenApiRestrictions,
+			MethodImplementation methodImplementation
+	) {
 		this.definingClass = definingClass;
 		this.name = name;
 		this.parameters = parameters;
 		this.returnType = returnType;
 		this.accessFlags = accessFlags;
 		this.annotations = annotations;
+		this.hiddenApiRestrictions = hiddenApiRestrictions;
 		this.methodImplementation = methodImplementation;
 	}
 
@@ -80,6 +98,10 @@ public class BasicMethod extends BaseMethodReference implements Method {
 	@Override
 	public MethodImplementation getImplementation() {
 		return methodImplementation;
+	}
+	@Override
+	public Set<HiddenApiRestriction> getHiddenApiRestrictions() {
+		return hiddenApiRestrictions;
 	}
 
 	@Override

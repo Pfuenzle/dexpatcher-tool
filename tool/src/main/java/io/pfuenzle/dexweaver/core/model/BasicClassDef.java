@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.Iterables;
-import org.jf.dexlib2.base.reference.BaseTypeReference;
-import org.jf.dexlib2.iface.Annotation;
-import org.jf.dexlib2.iface.ClassDef;
-import org.jf.dexlib2.iface.Field;
-import org.jf.dexlib2.iface.Method;
-import org.jf.dexlib2.util.FieldUtil;
-import org.jf.dexlib2.util.MethodUtil;
+import com.android.tools.smali.dexlib2.base.reference.BaseTypeReference;
+import com.android.tools.smali.dexlib2.iface.Annotation;
+import com.android.tools.smali.dexlib2.iface.ClassDef;
+import com.android.tools.smali.dexlib2.iface.Field;
+import com.android.tools.smali.dexlib2.iface.Method;
+import com.android.tools.smali.dexlib2.util.FieldUtil;
+import com.android.tools.smali.dexlib2.util.MethodUtil;
 
 public class BasicClassDef extends BaseTypeReference implements ClassDef {
 
@@ -54,11 +54,11 @@ public class BasicClassDef extends BaseTypeReference implements ClassDef {
 		this.sourceFile = sourceFile;
 		this.annotations = annotations;
 		this.fields = fields;
-		this.staticFields = Iterables.filter(fields, FieldUtil.FIELD_IS_STATIC);
-		this.instanceFields = Iterables.filter(fields, FieldUtil.FIELD_IS_INSTANCE);
-		this.methods = methods;
-		this.directMethods = Iterables.filter(methods, MethodUtil.METHOD_IS_DIRECT);
-		this.virtualMethods = Iterables.filter(methods, MethodUtil.METHOD_IS_VIRTUAL);
+        this.staticFields = Iterables.filter(fields, field -> FieldUtil.FIELD_IS_STATIC.test(field));
+        this.instanceFields = Iterables.filter(fields, field -> FieldUtil.FIELD_IS_INSTANCE.test(field));
+        this.methods = methods;
+        this.directMethods = Iterables.filter(methods, method -> MethodUtil.METHOD_IS_DIRECT.test(method));
+        this.virtualMethods = Iterables.filter(methods, method -> MethodUtil.METHOD_IS_VIRTUAL.test(method));
 	}
 
 	public BasicClassDef(

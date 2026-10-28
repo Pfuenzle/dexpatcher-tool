@@ -29,21 +29,21 @@ import io.pfuenzle.dexweaver.transform.util.wrapper.WrapperMethod;
 import io.pfuenzle.dexweaver.transform.util.wrapper.WrapperMethodReference;
 import io.pfuenzle.dexweaver.transform.util.wrapper.WrapperRewriterModule;
 
-import org.jf.dexlib2.base.value.BaseStringEncodedValue;
-import org.jf.dexlib2.iface.Annotatable;
-import org.jf.dexlib2.iface.Annotation;
-import org.jf.dexlib2.iface.AnnotationElement;
-import org.jf.dexlib2.iface.ClassDef;
-import org.jf.dexlib2.iface.Field;
-import org.jf.dexlib2.iface.Method;
-import org.jf.dexlib2.iface.reference.FieldReference;
-import org.jf.dexlib2.iface.reference.MethodReference;
-import org.jf.dexlib2.iface.value.EncodedValue;
-import org.jf.dexlib2.iface.value.StringEncodedValue;
-import org.jf.dexlib2.rewriter.Rewriter;
-import org.jf.dexlib2.rewriter.RewriterModule;
-import org.jf.dexlib2.rewriter.RewriterUtils;
-import org.jf.dexlib2.rewriter.Rewriters;
+import com.android.tools.smali.dexlib2.base.value.BaseStringEncodedValue;
+import com.android.tools.smali.dexlib2.iface.Annotatable;
+import com.android.tools.smali.dexlib2.iface.Annotation;
+import com.android.tools.smali.dexlib2.iface.AnnotationElement;
+import com.android.tools.smali.dexlib2.iface.ClassDef;
+import com.android.tools.smali.dexlib2.iface.Field;
+import com.android.tools.smali.dexlib2.iface.Method;
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference;
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference;
+import com.android.tools.smali.dexlib2.iface.value.EncodedValue;
+import com.android.tools.smali.dexlib2.iface.value.StringEncodedValue;
+import com.android.tools.smali.dexlib2.rewriter.Rewriter;
+import com.android.tools.smali.dexlib2.rewriter.RewriterModule;
+import com.android.tools.smali.dexlib2.rewriter.RewriterUtils;
+import com.android.tools.smali.dexlib2.rewriter.Rewriters;
 
 public class PatchRewriterModule extends WrapperRewriterModule<RewriterModule> {
 

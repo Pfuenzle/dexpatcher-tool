@@ -12,10 +12,11 @@ package io.pfuenzle.dexweaver.transform.util.wrapper;
 
 import java.util.Set;
 
-import org.jf.dexlib2.base.reference.BaseFieldReference;
-import org.jf.dexlib2.iface.Annotation;
-import org.jf.dexlib2.iface.Field;
-import org.jf.dexlib2.iface.value.EncodedValue;
+import com.android.tools.smali.dexlib2.HiddenApiRestriction;
+import com.android.tools.smali.dexlib2.base.reference.BaseFieldReference;
+import com.android.tools.smali.dexlib2.iface.Annotation;
+import com.android.tools.smali.dexlib2.iface.Field;
+import com.android.tools.smali.dexlib2.iface.value.EncodedValue;
 
 public class WrapperField extends BaseFieldReference implements Field {
 
@@ -53,6 +54,10 @@ public class WrapperField extends BaseFieldReference implements Field {
 	@Override
 	public Set<? extends Annotation> getAnnotations() {
 		return wrappedField.getAnnotations();
+	}
+	@Override
+	public Set<HiddenApiRestriction> getHiddenApiRestrictions() {
+		return wrappedField.getHiddenApiRestrictions();
 	}
 
 }

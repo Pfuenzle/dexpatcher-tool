@@ -15,10 +15,10 @@ package io.pfuenzle.dexweaver.core.finder;
 
 import io.pfuenzle.dexweaver.core.util.TypeName;
 
-import org.jf.dexlib2.iface.ClassDef;
-import org.jf.dexlib2.iface.Member;
-import org.jf.dexlib2.iface.Field;
-import org.jf.dexlib2.iface.Method;
+import com.android.tools.smali.dexlib2.iface.ClassDef;
+import com.android.tools.smali.dexlib2.iface.Member;
+import com.android.tools.smali.dexlib2.iface.Field;
+import com.android.tools.smali.dexlib2.iface.Method;
 
 import java.util.List;
 

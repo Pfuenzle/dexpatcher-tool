@@ -13,11 +13,12 @@ package io.pfuenzle.dexweaver.transform.util.wrapper;
 import java.util.List;
 import java.util.Set;
 
-import org.jf.dexlib2.base.reference.BaseMethodReference;
-import org.jf.dexlib2.iface.Annotation;
-import org.jf.dexlib2.iface.Method;
-import org.jf.dexlib2.iface.MethodImplementation;
-import org.jf.dexlib2.iface.MethodParameter;
+import com.android.tools.smali.dexlib2.HiddenApiRestriction;
+import com.android.tools.smali.dexlib2.base.reference.BaseMethodReference;
+import com.android.tools.smali.dexlib2.iface.Annotation;
+import com.android.tools.smali.dexlib2.iface.Method;
+import com.android.tools.smali.dexlib2.iface.MethodImplementation;
+import com.android.tools.smali.dexlib2.iface.MethodParameter;
 
 public class WrapperMethod extends BaseMethodReference implements Method {
 
@@ -65,6 +66,10 @@ public class WrapperMethod extends BaseMethodReference implements Method {
 	@Override
 	public MethodImplementation getImplementation() {
 		return wrappedMethod.getImplementation();
+	}
+	@Override
+	public Set<HiddenApiRestriction> getHiddenApiRestrictions() {
+		return wrappedMethod.getHiddenApiRestrictions();
 	}
 
 }

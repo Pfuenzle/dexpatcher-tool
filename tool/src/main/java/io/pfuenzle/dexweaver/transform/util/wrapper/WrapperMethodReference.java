@@ -12,8 +12,8 @@ package io.pfuenzle.dexweaver.transform.util.wrapper;
 
 import java.util.List;
 
-import org.jf.dexlib2.base.reference.BaseMethodReference;
-import org.jf.dexlib2.iface.reference.MethodReference;
+import com.android.tools.smali.dexlib2.base.reference.BaseMethodReference;
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference;
 
 public class WrapperMethodReference extends BaseMethodReference {
 

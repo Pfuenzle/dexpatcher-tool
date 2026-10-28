@@ -10,8 +10,8 @@
 
 package io.pfuenzle.dexweaver.transform.util.wrapper;
 
-import org.jf.dexlib2.base.reference.BaseFieldReference;
-import org.jf.dexlib2.iface.reference.FieldReference;
+import com.android.tools.smali.dexlib2.base.reference.BaseFieldReference;
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference;
 
 public class WrapperFieldReference extends BaseFieldReference {
 

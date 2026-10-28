@@ -12,8 +12,8 @@ package io.pfuenzle.dexweaver.transform;
 
 import io.pfuenzle.dexweaver.core.util.Label;
 
-import org.jf.dexlib2.iface.reference.FieldReference;
-import org.jf.dexlib2.iface.reference.MethodReference;
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference;
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference;
 
 public abstract class MemberLogger extends BaseLogger {
 

@@ -19,8 +19,8 @@ import io.pfuenzle.dexweaver.core.finder.FinderQueryException;
 import io.pfuenzle.dexweaver.core.finder.FinderResolver;
 import io.pfuenzle.dexweaver.core.finder.FinderSpec;
 
-import org.jf.dexlib2.iface.ClassDef;
-import org.jf.dexlib2.iface.Member;
+import com.android.tools.smali.dexlib2.iface.ClassDef;
+import com.android.tools.smali.dexlib2.iface.Member;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

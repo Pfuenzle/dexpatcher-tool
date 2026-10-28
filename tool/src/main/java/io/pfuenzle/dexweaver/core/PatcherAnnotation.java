@@ -21,13 +21,13 @@ import io.pfuenzle.dexweaver.core.finder.FinderSpec;
 import io.pfuenzle.dexweaver.core.patcher.ActionBasedPatcher;
 import io.pfuenzle.dexweaver.core.util.DexUtils;
 
-import org.jf.dexlib2.iface.Annotation;
-import org.jf.dexlib2.iface.AnnotationElement;
-import org.jf.dexlib2.iface.value.BooleanEncodedValue;
-import org.jf.dexlib2.iface.value.EncodedValue;
-import org.jf.dexlib2.iface.value.EnumEncodedValue;
-import org.jf.dexlib2.iface.value.StringEncodedValue;
-import org.jf.dexlib2.iface.value.TypeEncodedValue;
+import com.android.tools.smali.dexlib2.iface.Annotation;
+import com.android.tools.smali.dexlib2.iface.AnnotationElement;
+import com.android.tools.smali.dexlib2.iface.value.BooleanEncodedValue;
+import com.android.tools.smali.dexlib2.iface.value.EncodedValue;
+import com.android.tools.smali.dexlib2.iface.value.EnumEncodedValue;
+import com.android.tools.smali.dexlib2.iface.value.StringEncodedValue;
+import com.android.tools.smali.dexlib2.iface.value.TypeEncodedValue;
 
 public class PatcherAnnotation implements ActionBasedPatcher.ActionContext {
 

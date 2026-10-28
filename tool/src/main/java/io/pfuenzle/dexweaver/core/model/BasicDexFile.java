@@ -12,9 +12,9 @@ package io.pfuenzle.dexweaver.core.model;
 
 import java.util.Set;
 
-import org.jf.dexlib2.Opcodes;
-import org.jf.dexlib2.iface.ClassDef;
-import org.jf.dexlib2.iface.DexFile;
+import com.android.tools.smali.dexlib2.Opcodes;
+import com.android.tools.smali.dexlib2.iface.ClassDef;
+import com.android.tools.smali.dexlib2.iface.DexFile;
 
 public class BasicDexFile implements DexFile {
 

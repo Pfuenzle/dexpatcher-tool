@@ -15,9 +15,9 @@ package io.pfuenzle.dexweaver.core.finder;
 
 import io.pfuenzle.dexweaver.core.util.TypeName;
 
-import org.jf.dexlib2.iface.Annotation;
-import org.jf.dexlib2.iface.AnnotationElement;
-import org.jf.dexlib2.iface.value.StringEncodedValue;
+import com.android.tools.smali.dexlib2.iface.Annotation;
+import com.android.tools.smali.dexlib2.iface.AnnotationElement;
+import com.android.tools.smali.dexlib2.iface.value.StringEncodedValue;
 
 /**
  * Parses the {@code @DexFinder} annotation of a patch item.

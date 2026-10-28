@@ -10,7 +10,7 @@
 
 package io.pfuenzle.dexweaver.core.util;
 
-import org.jf.dexlib2.rewriter.Rewriter;
+import com.android.tools.smali.dexlib2.rewriter.Rewriter;
 
 public abstract class ElementalTypeRewriter implements Rewriter<String> {
 

@@ -18,9 +18,9 @@ import java.util.Set;
 import io.pfuenzle.dexweaver.core.model.BasicDexFile;
 import io.pfuenzle.dexweaver.core.patcher.PackagePatcher;
 
-import org.jf.dexlib2.Opcodes;
-import org.jf.dexlib2.iface.ClassDef;
-import org.jf.dexlib2.iface.DexFile;
+import com.android.tools.smali.dexlib2.Opcodes;
+import com.android.tools.smali.dexlib2.iface.ClassDef;
+import com.android.tools.smali.dexlib2.iface.DexFile;
 
 public class DexWeaver {
 

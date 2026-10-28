@@ -8,4 +8,5 @@
  * or (at your option) any later version.
  */
 
-include ':annotation', ':tool', ':test', ':test:source', ':test:patch'
+include ':annotation', ':tool', ':test', ':test:source', ':test:patch', ':multidexlib2'
+project(':multidexlib2').projectDir = file('../multidexlib2')

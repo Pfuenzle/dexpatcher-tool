@@ -14,7 +14,7 @@ import io.pfuenzle.dexweaver.transform.MemberLogger;
 import io.pfuenzle.dexweaver.transform.TransformLogger;
 import io.pfuenzle.dexweaver.transform.codec.DexCodecModule.ItemType;
 
-import org.jf.dexlib2.rewriter.RewriterModule;
+import com.android.tools.smali.dexlib2.rewriter.RewriterModule;
 
 public abstract class DexCodec extends MemberLogger implements DexCodecModule.ItemRewriter {
 

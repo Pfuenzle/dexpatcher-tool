@@ -23,12 +23,12 @@ import io.pfuenzle.dexweaver.core.finder.FinderSpec;
 import lanchon.multidexlib2.BasicDexFileNamer;
 import lanchon.multidexlib2.DexFileNamer;
 import lanchon.multidexlib2.MultiDexIO;
-import org.jf.dexlib2.Opcodes;
-import org.jf.dexlib2.iface.ClassDef;
-import org.jf.dexlib2.iface.DexFile;
-import org.jf.dexlib2.iface.Field;
-import org.jf.dexlib2.iface.Member;
-import org.jf.dexlib2.iface.Method;
+import com.android.tools.smali.dexlib2.Opcodes;
+import com.android.tools.smali.dexlib2.iface.ClassDef;
+import com.android.tools.smali.dexlib2.iface.DexFile;
+import com.android.tools.smali.dexlib2.iface.Field;
+import com.android.tools.smali.dexlib2.iface.Member;
+import com.android.tools.smali.dexlib2.iface.Method;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -176,14 +176,14 @@ public final class MappingCheckMain {
         return resolver.resolveMember(sourceClasses, searchClass);
     }
 
-    private static boolean hasFinder(Context context, org.jf.dexlib2.iface.Annotatable item)
+    private static boolean hasFinder(Context context, com.android.tools.smali.dexlib2.iface.Annotatable item)
             throws Exception {
         PatcherAnnotation annotation = parse(context, item.getAnnotations());
         return annotation != null && annotation.getFinder() != null;
     }
 
     private static PatcherAnnotation parse(Context context,
-            java.util.Set<? extends org.jf.dexlib2.iface.Annotation> annotations) throws Exception {
+            java.util.Set<? extends com.android.tools.smali.dexlib2.iface.Annotation> annotations) throws Exception {
         return PatcherAnnotation.parse(context.getActionParser(), annotations);
     }
 

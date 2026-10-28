@@ -17,8 +17,8 @@ import java.util.Map;
 import io.pfuenzle.dexweaver.core.util.Id;
 import io.pfuenzle.dexweaver.transform.mapper.map.DexMap;
 
-import org.jf.dexlib2.iface.reference.FieldReference;
-import org.jf.dexlib2.iface.reference.MethodReference;
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference;
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference;
 
 public class DexMapping implements MapBuilder, DexMap {
 

@@ -16,10 +16,10 @@ import io.pfuenzle.dexweaver.core.patcher.ClassSetPatcher;
 import io.pfuenzle.dexweaver.core.patcher.FieldSetPatcher;
 import io.pfuenzle.dexweaver.core.patcher.MethodSetPatcher;
 
-import org.jf.dexlib2.AccessFlags;
+import com.android.tools.smali.dexlib2.AccessFlags;
 
 import static io.pfuenzle.dexweaver.core.logger.Logger.Level.*;
-import static org.jf.dexlib2.AccessFlags.*;
+import static com.android.tools.smali.dexlib2.AccessFlags.*;
 
 public abstract class AccessFlagLogger {
 

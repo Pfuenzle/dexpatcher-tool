@@ -10,7 +10,7 @@
 
 package io.pfuenzle.dexweaver.transform.codec;
 
-import org.jf.dexlib2.rewriter.Rewriter;
+import com.android.tools.smali.dexlib2.rewriter.Rewriter;
 
 // Binary class name '<name>' (eg: 'java/lang/String') corresponds to type descriptor 'L<name>;'.
 public abstract class BinaryClassNameRewriter implements Rewriter<String> {

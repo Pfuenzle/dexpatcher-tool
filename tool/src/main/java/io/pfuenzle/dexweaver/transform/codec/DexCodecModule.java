@@ -12,31 +12,31 @@ package io.pfuenzle.dexweaver.transform.codec;
 
 import io.pfuenzle.dexweaver.transform.util.wrapper.WrapperRewriterModule;
 
-import org.jf.dexlib2.DebugItemType;
-import org.jf.dexlib2.ValueType;
-import org.jf.dexlib2.base.reference.BaseStringReference;
-import org.jf.dexlib2.base.value.BaseStringEncodedValue;
-import org.jf.dexlib2.iface.AnnotationElement;
-import org.jf.dexlib2.iface.MethodParameter;
-import org.jf.dexlib2.iface.debug.DebugItem;
-import org.jf.dexlib2.iface.debug.EndLocal;
-import org.jf.dexlib2.iface.debug.RestartLocal;
-import org.jf.dexlib2.iface.debug.StartLocal;
-import org.jf.dexlib2.iface.reference.FieldReference;
-import org.jf.dexlib2.iface.reference.MethodReference;
-import org.jf.dexlib2.iface.reference.StringReference;
-import org.jf.dexlib2.iface.value.EncodedValue;
-import org.jf.dexlib2.iface.value.StringEncodedValue;
-import org.jf.dexlib2.rewriter.AnnotationElementRewriter;
-import org.jf.dexlib2.rewriter.DebugItemRewriter;
-import org.jf.dexlib2.rewriter.DexRewriter;
-import org.jf.dexlib2.rewriter.EncodedValueRewriter;
-import org.jf.dexlib2.rewriter.FieldReferenceRewriter;
-import org.jf.dexlib2.rewriter.MethodParameterRewriter;
-import org.jf.dexlib2.rewriter.MethodReferenceRewriter;
-import org.jf.dexlib2.rewriter.Rewriter;
-import org.jf.dexlib2.rewriter.RewriterModule;
-import org.jf.dexlib2.rewriter.Rewriters;
+import com.android.tools.smali.dexlib2.DebugItemType;
+import com.android.tools.smali.dexlib2.ValueType;
+import com.android.tools.smali.dexlib2.base.reference.BaseStringReference;
+import com.android.tools.smali.dexlib2.base.value.BaseStringEncodedValue;
+import com.android.tools.smali.dexlib2.iface.AnnotationElement;
+import com.android.tools.smali.dexlib2.iface.MethodParameter;
+import com.android.tools.smali.dexlib2.iface.debug.DebugItem;
+import com.android.tools.smali.dexlib2.iface.debug.EndLocal;
+import com.android.tools.smali.dexlib2.iface.debug.RestartLocal;
+import com.android.tools.smali.dexlib2.iface.debug.StartLocal;
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference;
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference;
+import com.android.tools.smali.dexlib2.iface.reference.StringReference;
+import com.android.tools.smali.dexlib2.iface.value.EncodedValue;
+import com.android.tools.smali.dexlib2.iface.value.StringEncodedValue;
+import com.android.tools.smali.dexlib2.rewriter.AnnotationElementRewriter;
+import com.android.tools.smali.dexlib2.rewriter.DebugItemRewriter;
+import com.android.tools.smali.dexlib2.rewriter.DexRewriter;
+import com.android.tools.smali.dexlib2.rewriter.EncodedValueRewriter;
+import com.android.tools.smali.dexlib2.rewriter.FieldReferenceRewriter;
+import com.android.tools.smali.dexlib2.rewriter.MethodParameterRewriter;
+import com.android.tools.smali.dexlib2.rewriter.MethodReferenceRewriter;
+import com.android.tools.smali.dexlib2.rewriter.Rewriter;
+import com.android.tools.smali.dexlib2.rewriter.RewriterModule;
+import com.android.tools.smali.dexlib2.rewriter.Rewriters;
 
 public class DexCodecModule extends RewriterModule {
 

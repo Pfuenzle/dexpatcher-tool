@@ -19,9 +19,9 @@ import io.pfuenzle.dexweaver.core.util.TypeName;
 import io.pfuenzle.dexweaver.transform.mapper.map.DexMap;
 
 import com.google.common.base.Splitter;
-import org.jf.dexlib2.iface.DexFile;
-import org.jf.dexlib2.iface.reference.FieldReference;
-import org.jf.dexlib2.iface.reference.MethodReference;
+import com.android.tools.smali.dexlib2.iface.DexFile;
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference;
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference;
 
 public class EncoderDexMap implements DexMap {
 

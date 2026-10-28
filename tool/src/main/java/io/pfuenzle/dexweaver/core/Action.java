@@ -12,7 +12,7 @@ package io.pfuenzle.dexweaver.core;
 
 import java.util.Locale;
 
-import org.jf.dexlib2.iface.value.EnumEncodedValue;
+import com.android.tools.smali.dexlib2.iface.value.EnumEncodedValue;
 
 public enum Action {
 
