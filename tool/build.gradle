@@ -35,7 +35,7 @@ def dexlib2Version = '3.0.10'
 
 dependencies {
     implementation 'commons-cli:commons-cli:1.4'
-    implementation project(':multidexlib2')
+    implementation 'com.github.Pfuenzle:multidexlib2:v3.0.10.r3'
     api 'com.android.tools.smali:smali-dexlib2:' + dexlib2Version
 }
 
@@ -91,6 +91,7 @@ shadowJar {
 }
 
 assemble.dependsOn shadowJar
+build.dependsOn shadowJar, tasks.getByPath(':annotation:build')
 
 apply from: '../configure-publishing.gradle'
 
